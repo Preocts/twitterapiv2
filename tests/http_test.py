@@ -54,7 +54,7 @@ def test_response_handling_401() -> None:
 def test_response_handing_200() -> None:
     mock_resp = MockReponse(200, b"")
     client = Http()
-    assert client._raise_on_response(mock_resp, "") is None
+    client._raise_on_response(mock_resp, "")
 
 
 @api_recorder.use_cassette()
