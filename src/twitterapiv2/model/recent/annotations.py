@@ -1,8 +1,10 @@
 from typing import Any
 from typing import Dict
 
+from twitterapiv2.model.base_model import BaseModel
 
-class Annotations:
+
+class Annotations(BaseModel):
     start: int
     end: int
     probability: float
@@ -10,12 +12,12 @@ class Annotations:
     normalized_text: str
 
     @classmethod
-    def build_obj(cls, obj: Dict[str, Any]) -> "Annotations":
+    def build_from(cls, data: Dict[str, Any]) -> "Annotations":
         """Build object"""
         new = cls()
-        new.start = obj.get("start", 0)
-        new.end = obj.get("end", 0)
-        new.probability = obj.get("probability", 0.0)
-        new.type = obj.get("type", "")
-        new.normalized_text = obj.get("normalized_text", "")
+        new.start = data.get("start", 0)
+        new.end = data.get("end", 0)
+        new.probability = data.get("probability", 0.0)
+        new.type = data.get("type", "")
+        new.normalized_text = data.get("normalized_text", "")
         return new

@@ -149,7 +149,7 @@ class SearchRecent(Http):
         """
         self._fields["query"] = query
         self._fields["next_token"] = page_token
-        result = Recent.build_obj(super().get(self.URL, self.fields))
+        result = Recent.build_from(super().get(self.URL, self.fields))
         self._next_token = result.meta.next_token
         return result
 

@@ -3,6 +3,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
+from twitterapiv2.model.base_model import BaseModel
 from twitterapiv2.model.recent.attachments import Attachments
 from twitterapiv2.model.recent.context_annotations import ContextAnnotations
 from twitterapiv2.model.recent.entities import Entities
@@ -16,7 +17,7 @@ from twitterapiv2.model.recent.referenced_tweets import ReferencedTweets
 from twitterapiv2.model.recent.withheld import Withheld
 
 
-class Data:
+class Data(BaseModel):
     """Defines an empty Data object"""
 
     id: str
@@ -42,26 +43,26 @@ class Data:
     includes: Optional[Includes]
 
     @classmethod
-    def build_obj(cls, obj: Dict[str, Any]) -> "Data":
+    def build_from(cls, data: Dict[str, Any]) -> "Data":
         """Builds object from dictionary"""
         tweet = cls()
-        tweet.id = obj["id"]
-        tweet.text = obj["text"]
-        tweet.created_at = obj.get("created_at")
-        tweet.author_id = obj.get("author_id")
-        tweet.conversation_id = obj.get("conversation_id")
-        tweet.in_reply_to_user_id = obj.get("in_reply_to_user_id")
-        tweet.possibly_sensitive = obj.get("possibly_sensitive")
-        tweet.lang = obj.get("lang")
-        tweet.reply_settings = obj.get("replay_settings")
-        tweet.source = obj.get("source")
+        tweet.id = data["id"]
+        tweet.text = data["text"]
+        tweet.created_at = data.get("created_at")
+        tweet.author_id = data.get("author_id")
+        tweet.conversation_id = data.get("conversation_id")
+        tweet.in_reply_to_user_id = data.get("in_reply_to_user_id")
+        tweet.possibly_sensitive = data.get("possibly_sensitive")
+        tweet.lang = data.get("lang")
+        tweet.reply_settings = data.get("replay_settings")
+        tweet.source = data.get("source")
 
         # Process nested arrays
         nested_array: Dict[str, Any] = {
             "referenced_tweets": ReferencedTweets,
         }
         for key, model in nested_array.items():
-            setattr(tweet, key, [model.build_obj(x) for x in obj.get(key, [])])
+            setattr(tweet, key, [model.build_from(x) for x in data.get(key, [])])
 
         # Process Nested Objects
         nested_obj: Dict[str, Any] = {
@@ -77,7 +78,7 @@ class Data:
             "includes": Includes,
         }
         for key, model in nested_obj.items():
-            content = obj.get(key)
-            setattr(tweet, key, model.build_obj(content) if content else None)
+            content = data.get(key)
+            setattr(tweet, key, model.build_from(content) if content else None)
 
         return tweet

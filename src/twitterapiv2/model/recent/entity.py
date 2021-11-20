@@ -1,17 +1,19 @@
 from typing import Any
 from typing import Dict
 
+from twitterapiv2.model.base_model import BaseModel
 
-class Entity:
+
+class Entity(BaseModel):
     id: str
     name: str
     description: str
 
     @classmethod
-    def build_obj(cls, obj: Dict[str, Any]) -> "Entity":
+    def build_from(cls, data: Dict[str, Any]) -> "Entity":
         """Build object"""
         new = cls()
-        new.id = obj.get("id", "")
-        new.name = obj.get("name", "")
-        new.description = obj.get("description", "")
+        new.id = data.get("id", "")
+        new.name = data.get("name", "")
+        new.description = data.get("description", "")
         return new

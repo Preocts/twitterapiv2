@@ -6,11 +6,12 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
+from twitterapiv2.model.base_model import BaseModel
 from twitterapiv2.model.recent.data import Data
 from twitterapiv2.model.recent.meta import Meta
 
 
-class Recent:
+class Recent(BaseModel):
     """Defines an empty search/recent object"""
 
     data: List[Data]
@@ -18,10 +19,10 @@ class Recent:
     errors: Optional[Dict[str, Any]]
 
     @classmethod
-    def build_obj(cls, obj: Dict[str, Any]) -> "Recent":
+    def build_from(cls, data: Dict[str, Any]) -> "Recent":
         """Builds object from dictionary"""
         new = cls()
-        new.errors = obj.get("errors")
-        new.data = [Data.build_obj(x) for x in obj.get("data", [])]
-        new.meta = Meta.build_obj(obj.get("meta", {}))
+        new.errors = data.get("errors")
+        new.data = [Data.build_from(x) for x in data.get("data", [])]
+        new.meta = Meta.build_from(data.get("meta", {}))
         return new
