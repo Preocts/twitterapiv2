@@ -84,19 +84,19 @@ class Http:
 
     def post(self) -> None:
         """Override for specific implementations"""
-        raise NotImplementedError  # nopragma
+        raise NotImplementedError  # pragma: no cover
 
     def put(self) -> None:
         """Override for specific implementations"""
-        raise NotImplementedError  # nopragma
+        raise NotImplementedError  # pragma: no cover
 
     def patch(self) -> None:
         """Override for specific implementations"""
-        raise NotImplementedError  # nopragma
+        raise NotImplementedError  # pragma: no cover
 
     def delete(self) -> None:
         """Override for specific implementations"""
-        raise NotImplementedError  # nopragma
+        raise NotImplementedError  # pragma: no cover
 
     def _raise_on_response(self, resp: Any, url: str) -> None:
         """Custom handling of invalid status codes"""
