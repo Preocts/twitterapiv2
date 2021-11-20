@@ -65,7 +65,7 @@ def test_last_response_headers() -> None:
     reset = client.limit_reset
     client.get("https://api.twitter.com/2/tweets/search/recent", fields)
     assert client.limit_remaining > remaining
-    assert client.limit_reset > reset
+    assert client.limit_reset != reset
 
     remaining = client.limit_remaining
     reset = client.limit_reset
