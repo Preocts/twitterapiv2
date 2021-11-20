@@ -1,7 +1,9 @@
 from typing import Any
 
+from twitterapiv2.model.base_model import BaseModel
 
-class ResponseHeader:
+
+class ResponseHeader(BaseModel):
     """Empty Twitter v2 Response Header"""
 
     date: str

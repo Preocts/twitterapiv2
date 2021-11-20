@@ -1,8 +1,10 @@
 from typing import Any
 from typing import Dict
 
+from twitterapiv2.model.base_model import BaseModel
 
-class Urls:
+
+class Urls(BaseModel):
     start: int
     end: int
     url: str
@@ -11,13 +13,13 @@ class Urls:
     unwound_url: str
 
     @classmethod
-    def build_obj(cls, obj: Dict[str, Any]) -> "Urls":
+    def build_from(cls, data: Dict[str, Any]) -> "Urls":
         """Build object"""
         new = cls()
-        new.start = obj.get("start", 0)
-        new.end = obj.get("end", 0)
-        new.url = obj.get("url", "")
-        new.expanded_url = obj.get("expanded_url", "")
-        new.display_url = obj.get("display_url", "")
-        new.unwound_url = obj.get("unwound_url", "")
+        new.start = data.get("start", 0)
+        new.end = data.get("end", 0)
+        new.url = data.get("url", "")
+        new.expanded_url = data.get("expanded_url", "")
+        new.display_url = data.get("display_url", "")
+        new.unwound_url = data.get("unwound_url", "")
         return new

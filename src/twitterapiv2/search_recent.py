@@ -1,4 +1,3 @@
-import os
 from datetime import datetime
 from typing import Any
 from typing import Dict
@@ -9,8 +8,6 @@ from twitterapiv2.http import Http
 from twitterapiv2.model.recent.recent import Recent
 from twitterapiv2.util.rules import is_ISO8601
 from twitterapiv2.util.rules import to_ISO8601
-
-_BEARER_TOKEN = "TW_BEARER_TOKEN"
 
 
 class SearchRecent(Http):
@@ -152,13 +149,9 @@ class SearchRecent(Http):
         """
         self._fields["query"] = query
         self._fields["next_token"] = page_token
-        result = Recent.build_obj(super().get(self.URL, self.fields, self._headers()))
+        result = Recent.build_from(super().get(self.URL, self.fields))
         self._next_token = result.meta.next_token
         return result
-
-    def _headers(self) -> Dict[str, str]:
-        """Build headers with TW_BEARER_TOKEN from environ"""
-        return {"Authorization": "Bearer " + os.getenv(_BEARER_TOKEN, "")}
 
     def _new_client(self) -> "SearchRecent":
         """Used to create a new client with attributes carried forward"""
