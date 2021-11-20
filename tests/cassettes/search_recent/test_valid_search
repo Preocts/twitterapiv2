@@ -1,0 +1,146 @@
+interactions:
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://api.twitter.com/2/tweets/search/recent?max_results=10&query=hello
+  response:
+    body:
+      string: "{\"data\":[{\"id\":\"1461880347478528007\",\"text\":\"RT @forlalisa_th:
+        Hello  @BigReidRadio I would LOVE to hear #MONEY\_ on @997now !! Can you please
+        play \\uD83D\\uDCB8\\uD83D\\uDCB8 for us ?\\uD83E\\uDD70\\uD83D\\uDE01 \\nThank
+        youuuuu!\\uD83E\\uDD17 https:\u2026\"},{\"id\":\"1461880346580979715\",\"text\":\"RT
+        @SAVY13479352: Hello, I am a retired man, trying my best to do Affiliate Marketing,
+        Since last few months I have not received a single s\u2026\"},{\"id\":\"1461880346165788678\",\"text\":\"Hello
+        @God it\u2019s me, I love it here. Thank you.\"},{\"id\":\"1461880345511432193\",\"text\":\"RT
+        @skjnkim_cart: [#skjnkim_sells] \\nwts \u2022 lfb \u2022 ph \u2022 nct dream\\n\\n\uFF65\u1D17\uFF65
+        Hello Future PCS\\n       \u2022jaemin (future) - clean\\n       \u2022jeno
+        (future)\u2026\"},{\"id\":\"1461880344974540805\",\"text\":\"hello someone
+        pspspspsp https://t.co/qVLlxCEBA4\"},{\"id\":\"1461880344026746884\",\"text\":\"RT
+        @lizehtriosreal: Hello \u2764\uFE0F https://t.co/gf88tYT4QD\"},{\"id\":\"1461880343821176837\",\"text\":\"RT
+        @mom_tho: hello darkness my old friend\\nis it 5 or 10 pm\"},{\"id\":\"1461880343695290368\",\"text\":\"RT
+        @_naminaminaeee: hello, drop the tags for jihyo!!\"},{\"id\":\"1461880343229878276\",\"text\":\"@NaughtyLoise
+        Hello Tom New Jersey\"},{\"id\":\"1461880343020060673\",\"text\":\"@Hello_Easyaim
+        \u3059\"}],\"meta\":{\"newest_id\":\"1461880347478528007\",\"oldest_id\":\"1461880343020060673\",\"result_count\":10,\"next_token\":\"b26v89c19zqg8o3fpdy5zsnp3n3qzp909cim472adoxa5\"}}"
+    headers:
+      api-version:
+      - '2.30'
+      cache-control:
+      - no-cache, no-store, max-age=0
+      content-disposition:
+      - attachment; filename=json.json
+      content-length:
+      - '1373'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Sat, 20 Nov 2021 02:13:40 UTC
+      server:
+      - tsa_b
+      set-cookie:
+      - guest_id_marketing=v1%3A163737442060365971; Max-Age=63072000; Expires=Mon,
+        20 Nov 2023 02:13:40 GMT; Path=/; Domain=.twitter.com; Secure; SameSite=None
+      - guest_id_ads=v1%3A163737442060365971; Max-Age=63072000; Expires=Mon, 20 Nov
+        2023 02:13:40 GMT; Path=/; Domain=.twitter.com; Secure; SameSite=None
+      - personalization_id="v1_79o3ot6PU+UgaRL6zwf7vg=="; Max-Age=63072000; Expires=Mon,
+        20 Nov 2023 02:13:40 GMT; Path=/; Domain=.twitter.com; Secure; SameSite=None
+      - guest_id=v1%3A163737442060365971; Max-Age=63072000; Expires=Mon, 20 Nov 2023
+        02:13:40 GMT; Path=/; Domain=.twitter.com; Secure; SameSite=None
+      strict-transport-security:
+      - max-age=631138519
+      x-access-level:
+      - read
+      x-connection-hash:
+      - 06c2b129b4c57d8417cf30c6f1847d58afc8d0f0350b0337ee4bc236c97d3934
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - SAMEORIGIN
+      x-rate-limit-limit:
+      - '450'
+      x-rate-limit-remaining:
+      - '444'
+      x-rate-limit-reset:
+      - '1637375049'
+      x-response-time:
+      - '143'
+      x-xss-protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://api.twitter.com/2/tweets/search/recent?max_results=10&query=hello&next_token=b26v89c19zqg8o3fpdy5zsnp3n3qzp909cim472adoxa5
+  response:
+    body:
+      string: "{\"data\":[{\"id\":\"1461880342080598017\",\"text\":\"RT @leadernim_yang:
+        hello, please read this thread\\n\\n#enhypen #engenes\"},{\"id\":\"1461880339186421772\",\"text\":\"@Cryptoscreen_en
+        @AstraGuild Hello sir\\nToken burn is important to increase value and price
+        a token? do u have buy back or maybe burn system and how does it work??? @MominaMustehsan
+        @LokiUpdatesPlus \\n@hasanafif10\"},{\"id\":\"1461880338578173952\",\"text\":\"RT
+        @onlyforsej: Hello A'TIN rt nyo lhat ng dumaan sa TL nyo na may #Bazinga_SB19
+        bumababa na tayooo tulungan po tayo hihi\\n\\n@SB19Official #S\u2026\"},{\"id\":\"1461880338498658313\",\"text\":\"@SHlBAINUtoken
+        @Shibtoken Hello stranger\"},{\"id\":\"1461880336938270721\",\"text\":\"@rumiefy
+        Hello, are your comms open?\"},{\"id\":\"1461880334899826691\",\"text\":\"RT
+        @hello_new_dream: \u4ECA\u65E5\u306F #\u5B87\u5B99\u306E\u65E5 \\uD83D\\uDE80\\n\\nHELLO
+        NEW DREAM. DATABASE\u306B\u96C6\u307E\u3063\u305F\u300C#\u5B87\u5B99\u300D\u3068\u3044\u3046\u30AD\u30FC\u30EF\u30FC\u30C9\u306E\u5922\u305F\u3061\\uD83E\\uDE90\uFF01\\n\u5B87\u5B99\u3067\u30B3\u30F3\u30B5\u30FC\u30C8\u3001\u5B87\u5B99\u3067\u30AF\u30ED\u30FC\u30EB\u3001\u5B87\u5B99\u4EBA\u306B\u4F1A\u3046\\uD83D\\uDC7D\uFF1F\uFF01\u306A\u3093\u3066\u5922\u3082\\uD83C\\uDF0D\uFF01\\n\\nhttps://t.co/JHRofqd\u2026\"},{\"id\":\"1461880334828679168\",\"text\":\"@Hello_Easyaim
+        \u3088\u308D\u3067\"},{\"id\":\"1461880334190985223\",\"text\":\"RT @hellohaechan_th:
+        \\uD83D\\uDCF0 - 211120: SM GLOBAL SHOP\\n\\n\u0E40\u0E21\u0E37\u0E48\u0E2D\u0E0B\u0E37\u0E49\u0E2D\u0E2D\u0E31\u0E25\u0E1A\u0E31\u0E49\u0E21
+        \u2018HELLO FUTURE\u2019 \u0E01\u0E31\u0E1A\u0E17\u0E32\u0E07 SM GLOBAL SHOP
+        \u0E08\u0E30\u0E44\u0E14\u0E49\u0E23\u0E31\u0E1A SM GLOBAL SHOP EXCLUSIVE
+        PH\u2026\"},{\"id\":\"1461880334069510148\",\"text\":\"RT @7DREAMlE: txt\u2019s
+        soobin singing and dancing to nct dream\u2019s hello future from today\u2019s
+        vlive! he also mentioned dive into you and hot sauc\u2026\"},{\"id\":\"1461880333968707592\",\"text\":\"@chouuubear_
+        \\uD83D\\uDC8C hello, hari ini libur ga? jangan lupa mandii, sarapan yaa!
+        stay healthy and be happy, have a great day \u2661\"}],\"meta\":{\"newest_id\":\"1461880342080598017\",\"oldest_id\":\"1461880333968707592\",\"result_count\":10,\"next_token\":\"b26v89c19zqg8o3fpdy5zsnp3n3pwtiy680nwl6iwrz3x\"}}"
+    headers:
+      api-version:
+      - '2.30'
+      cache-control:
+      - no-cache, no-store, max-age=0
+      content-disposition:
+      - attachment; filename=json.json
+      content-length:
+      - '1894'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Sat, 20 Nov 2021 02:13:40 UTC
+      server:
+      - tsa_b
+      set-cookie:
+      - guest_id_marketing=v1%3A163737442079706149; Max-Age=63072000; Expires=Mon,
+        20 Nov 2023 02:13:40 GMT; Path=/; Domain=.twitter.com; Secure; SameSite=None
+      - guest_id_ads=v1%3A163737442079706149; Max-Age=63072000; Expires=Mon, 20 Nov
+        2023 02:13:40 GMT; Path=/; Domain=.twitter.com; Secure; SameSite=None
+      - personalization_id="v1_O51Lm0FPGmUumQ02XIOAKQ=="; Max-Age=63072000; Expires=Mon,
+        20 Nov 2023 02:13:40 GMT; Path=/; Domain=.twitter.com; Secure; SameSite=None
+      - guest_id=v1%3A163737442079706149; Max-Age=63072000; Expires=Mon, 20 Nov 2023
+        02:13:40 GMT; Path=/; Domain=.twitter.com; Secure; SameSite=None
+      strict-transport-security:
+      - max-age=631138519
+      x-access-level:
+      - read
+      x-connection-hash:
+      - 06c2b129b4c57d8417cf30c6f1847d58afc8d0f0350b0337ee4bc236c97d3934
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - SAMEORIGIN
+      x-rate-limit-limit:
+      - '450'
+      x-rate-limit-remaining:
+      - '443'
+      x-rate-limit-reset:
+      - '1637375049'
+      x-response-time:
+      - '126'
+      x-xss-protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1
