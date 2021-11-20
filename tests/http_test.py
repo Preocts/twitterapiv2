@@ -1,4 +1,5 @@
 from datetime import datetime
+from time import sleep
 from typing import NamedTuple
 
 import pytest
@@ -25,7 +26,9 @@ def test_default_values() -> None:
     client = Http()
 
     assert client.limit_remaining == -1
-    assert client.limit_reset < datetime.now()
+    reset = client.limit_reset
+    sleep(0.5)
+    assert reset < datetime.now()
     assert isinstance(client.http, PoolManager)
 
 
