@@ -7,6 +7,8 @@ from typing import Union
 
 from twitterapiv2.http import Http
 from twitterapiv2.model.recent.recent import Recent
+from twitterapiv2.util.rules import is_ISO8601
+from twitterapiv2.util.rules import to_ISO8601
 
 _BEARER_TOKEN = "TW_BEARER_TOKEN"
 
@@ -26,7 +28,6 @@ class SearchRecent(Http):
         super().__init__(num_pools=num_pools)
         self._fields: Dict[str, Any] = {}
         self._next_token: Optional[str] = None
-        self._previous_token: Optional[str] = None
 
     @property
     def fields(self) -> Dict[str, Any]:
@@ -38,15 +39,12 @@ class SearchRecent(Http):
         """Return next_token for pagination or `None` when all results are polled"""
         return self._next_token
 
-    @property
-    def previous_token(self) -> Optional[str]:
-        """Return previous_token for pagination or `None` when all results are polled"""
-        return self._previous_token
-
     def start_time(self, start: Union[str, datetime, None]) -> "SearchRecent":
         """Define start_time of query. YYYY-MM-DDTHH:mm:ssZ (ISO 8601/RFC 3339)"""
         if isinstance(start, datetime):
-            start = self._to_ISO8601(start)
+            start = to_ISO8601(start)
+        if not is_ISO8601(start):
+            raise ValueError("Datetime format expected: 'YYYY-MM-DDTHH:mm:ssZ'")
         self._fields["start_time"] = start if start else None
         return self._new_client()
 
@@ -57,7 +55,9 @@ class SearchRecent(Http):
         NOTE: The end_time cannot be less than 10 seconds from "now"
         """
         if isinstance(end, datetime):
-            end = self._to_ISO8601(end)
+            end = to_ISO8601(end)
+        if not is_ISO8601(end):
+            raise ValueError("Datetime format expected: 'YYYY-MM-DDTHH:mm:ssZ'")
         self._fields["end_time"] = end if end else None
         return self._new_client()
 
@@ -127,11 +127,13 @@ class SearchRecent(Http):
             pinned_tweet_id, profile_image_url, protected,
             public_metrics, url, username, verified, withheld
         """
-        self._fields["user_fields"] = user_fields if user_fields else None
+        self._fields["user.fields"] = user_fields if user_fields else None
         return self._new_client()
 
     def max_results(self, max_results: Optional[int]) -> "SearchRecent":
         """A number between 10 and 100. By default, set at 10 results"""
+        if max_results is not None and max_results not in range(10, 101):
+            raise ValueError("max_results must be between 10 and 100")
         self._fields["max_results"] = max_results if max_results else None
         return self._new_client()
 
@@ -152,7 +154,6 @@ class SearchRecent(Http):
         self._fields["next_token"] = page_token
         result = Recent.build_obj(super().get(self.URL, self.fields, self._headers()))
         self._next_token = result.meta.next_token
-        self._previous_token = result.meta.previous_token
         return result
 
     def _headers(self) -> Dict[str, str]:
@@ -164,8 +165,3 @@ class SearchRecent(Http):
         new_client = SearchRecent()
         new_client._fields.update(self._fields)
         return new_client
-
-    @staticmethod
-    def _to_ISO8601(dt: datetime) -> str:
-        """Convert datetime object to ISO 8601 standard UTC string"""
-        return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
