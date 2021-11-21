@@ -1,0 +1,9 @@
+{
+    "start": "mock",
+    "end": "mock",
+    "tweet_count": 1,
+    "meta": {
+        "total_tweet_count": 1,
+        "next_token": "mock"
+    }
+}
