@@ -143,8 +143,8 @@ class SearchRecent(Http):
         """
         Search tweets from up to the last seven days. max size of results is 100
 
-        For pagination; feed the `.next_token()` or `.previous_token()` property
-        into the `next_token` parameter. These default to None and can be
+        For pagination; feed the `.next_token()` property into the
+        `next_token` parameter. These default to None and can be
         safely referenced prior to, and after, searches.
         """
         self._fields["query"] = query

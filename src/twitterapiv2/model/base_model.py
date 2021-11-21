@@ -19,5 +19,6 @@ class BaseModel(ABC):
         """Returns objects as serialized dictionary (JSON)"""
         return json.loads(self.__repr__())
 
-    def build_from(self, data: Dict[str, Any]) -> "BaseModel":
+    @classmethod
+    def build_from(cls, data: Dict[str, Any]) -> "BaseModel":
         raise NotImplementedError  # pragma: no cover
