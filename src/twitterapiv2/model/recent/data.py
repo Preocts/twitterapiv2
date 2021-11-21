@@ -54,7 +54,7 @@ class Data(BaseModel):
         tweet.in_reply_to_user_id = data.get("in_reply_to_user_id")
         tweet.possibly_sensitive = data.get("possibly_sensitive")
         tweet.lang = data.get("lang")
-        tweet.reply_settings = data.get("replay_settings")
+        tweet.reply_settings = data.get("reply_settings")
         tweet.source = data.get("source")
 
         # Process nested arrays
