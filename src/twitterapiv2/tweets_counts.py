@@ -11,7 +11,7 @@ from twitterapiv2.util.rules import is_ISO8601
 from twitterapiv2.util.rules import to_ISO8601
 
 
-class TweetsCounts(Http):
+class TweetsCounts:
 
     URL_RECENT = "https://api.twitter.com/2/tweets/counts/recent"
     URL_ALL = "https://api.twitter.com/2/tweets/counts/all"
@@ -19,10 +19,9 @@ class TweetsCounts(Http):
     def __init__(
         self,
         end_point: Literal["recent", "all"] = "recent",
-        num_pools: int = 10,
     ) -> None:
         """
-        Create Tweets Counts client. Use methods to build query a .count() to run
+        Create Tweets Counts client. Use methods to build query and .fetch() to run
 
         end_point allows use of `/counts/all` endpoint for Academic Research access
 
@@ -30,7 +29,7 @@ class TweetsCounts(Http):
         applicaton bearer token. This can be defined manually or loaded with the
         use of AuthClient.set_bearer_token().
         """
-        super().__init__(num_pools=num_pools)
+        self.http = Http()
         self._fields: Dict[str, Any] = {}
         self._next_token: Optional[str] = None
         self._url = self.URL_ALL if end_point == "all" else self.URL_RECENT
@@ -49,9 +48,9 @@ class TweetsCounts(Http):
         """Define start_time of query. YYYY-MM-DDTHH:mm:ssZ (ISO 8601/RFC 3339)"""
         if isinstance(start, datetime):
             start = to_ISO8601(start)
-        if not is_ISO8601(start):
+        elif start is not None and not is_ISO8601(start):
             raise ValueError("Datetime format expected: 'YYYY-MM-DDTHH:mm:ssZ'")
-        self._fields["start_time"] = start if start else None
+        self._fields["start_time"] = start
         return self._new_client()
 
     def end_time(self, end: Union[str, datetime, None]) -> "TweetsCounts":
@@ -62,9 +61,9 @@ class TweetsCounts(Http):
         """
         if isinstance(end, datetime):
             end = to_ISO8601(end)
-        if not is_ISO8601(end):
+        elif end is not None and not is_ISO8601(end):
             raise ValueError("Datetime format expected: 'YYYY-MM-DDTHH:mm:ssZ'")
-        self._fields["end_time"] = end if end else None
+        self._fields["end_time"] = end
         return self._new_client()
 
     def since_id(self, since_id: Optional[str]) -> "TweetsCounts":
@@ -85,9 +84,9 @@ class TweetsCounts(Http):
         self._fields["granularity"] = granularity if granularity else None
         return self._new_client()
 
-    def count(self, query: str, *, page_token: Optional[str] = None) -> TweetCount:
+    def fetch(self, query: str, *, page_token: Optional[str] = None) -> TweetCount:
         """
-        Returns the count of Tweets from the last seven days that match a query
+        Fetches the count of Tweets from the last seven days that match a query
 
         Time-range can be controlled with start_time and end_time. Pagination
         only available with Acedemic research applications. `.next_token()` will
@@ -95,7 +94,7 @@ class TweetsCounts(Http):
         """
         self._fields["query"] = query
         self._fields["next_token"] = page_token
-        result = TweetCount.build_from(super().get(self._url, self.fields))
+        result = TweetCount.build_from(self.http.get(self._url, self.fields))
         self._next_token = result.meta.next_token
         return result
 
@@ -104,13 +103,3 @@ class TweetsCounts(Http):
         new_client = TweetsCounts()
         new_client._fields.update(self._fields)
         return new_client
-
-
-if __name__ == "__main__":
-    from secretbox import SecretBox
-
-    SecretBox(auto_load=True)
-    client = TweetsCounts().granularity("day")
-    result = client.count("#NaNoWriMo")
-    print(result)
-    print(result.tweet_count)

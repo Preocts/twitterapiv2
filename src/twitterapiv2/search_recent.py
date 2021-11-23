@@ -10,19 +10,19 @@ from twitterapiv2.util.rules import is_ISO8601
 from twitterapiv2.util.rules import to_ISO8601
 
 
-class SearchRecent(Http):
+class SearchRecent:
 
     URL = "https://api.twitter.com/2/tweets/search/recent"
 
-    def __init__(self, num_pools: int = 10) -> None:
+    def __init__(self) -> None:
         """
-        Create Search Recent client. Use methods to build query a .search() to run
+        Create Search Recent client. Use methods to build query and .fetch() to run
 
         The environment variable "TW_BEARER_TOKEN" is required; define with the
         applicaton bearer token. This can be defined manually or loaded with the
         use of AuthClient.set_bearer_token().
         """
-        super().__init__(num_pools=num_pools)
+        self.http = Http()
         self._fields: Dict[str, Any] = {}
         self._next_token: Optional[str] = None
 
@@ -40,9 +40,9 @@ class SearchRecent(Http):
         """Define start_time of query. YYYY-MM-DDTHH:mm:ssZ (ISO 8601/RFC 3339)"""
         if isinstance(start, datetime):
             start = to_ISO8601(start)
-        if not is_ISO8601(start):
+        elif start is not None and not is_ISO8601(start):
             raise ValueError("Datetime format expected: 'YYYY-MM-DDTHH:mm:ssZ'")
-        self._fields["start_time"] = start if start else None
+        self._fields["start_time"] = start
         return self._new_client()
 
     def end_time(self, end: Union[str, datetime, None]) -> "SearchRecent":
@@ -53,9 +53,9 @@ class SearchRecent(Http):
         """
         if isinstance(end, datetime):
             end = to_ISO8601(end)
-        if not is_ISO8601(end):
+        elif end is not None and not is_ISO8601(end):
             raise ValueError("Datetime format expected: 'YYYY-MM-DDTHH:mm:ssZ'")
-        self._fields["end_time"] = end if end else None
+        self._fields["end_time"] = end
         return self._new_client()
 
     def since_id(self, since_id: Optional[str]) -> "SearchRecent":
@@ -134,7 +134,7 @@ class SearchRecent(Http):
         self._fields["max_results"] = max_results if max_results else None
         return self._new_client()
 
-    def search(
+    def fetch(
         self,
         query: str,
         *,
@@ -149,7 +149,7 @@ class SearchRecent(Http):
         """
         self._fields["query"] = query
         self._fields["next_token"] = page_token
-        result = Recent.build_from(super().get(self.URL, self.fields))
+        result = Recent.build_from(self.http.get(self.URL, self.fields))
         self._next_token = result.meta.next_token
         return result
 

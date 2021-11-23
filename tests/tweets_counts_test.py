@@ -18,7 +18,7 @@ def test_valid_count() -> None:
     # injected into the env. Use the confest autouse fixture.
     client = TweetsCounts()
 
-    result = client.count("hello")
+    result = client.fetch("hello")
     assert isinstance(result, TweetCount)
     assert result.meta.total_tweet_count
     assert not client.next_token
@@ -30,8 +30,12 @@ def test_builder_start_time() -> None:
     with pytest.raises(ValueError):
         TweetsCounts().start_time("invalid")
     TweetsCounts().start_time(date_time)
+
     client = TweetsCounts().start_time(str_time)
     assert client.fields["start_time"] == str_time
+
+    client = client.start_time(None)
+    assert client.fields.get("start_time") is None
 
 
 def test_builder_end_time() -> None:
@@ -40,20 +44,33 @@ def test_builder_end_time() -> None:
     with pytest.raises(ValueError):
         TweetsCounts().end_time("invalid")
     TweetsCounts().end_time(date_time)
+
     client = TweetsCounts().end_time(str_time)
     assert client.fields["end_time"] == str_time
+
+    client = client.end_time(None)
+    assert client.fields.get("end_time") is None
 
 
 def test_builder_since_id() -> None:
     client = TweetsCounts().since_id("1234")
     assert client.fields["since_id"] == "1234"
 
+    client = client.since_id(None)
+    assert client.fields.get("since_id") is None
+
 
 def test_builder_until_id() -> None:
     client = TweetsCounts().until_id("1234")
     assert client.fields["until_id"] == "1234"
 
+    client = client.until_id(None)
+    assert client.fields.get("until_id") is None
+
 
 def test_builder_expansions() -> None:
     client = TweetsCounts().granularity("hour")
     assert client.fields["granularity"] == "hour"
+
+    client = client.granularity(None)
+    assert client.fields.get("granularity") is None
