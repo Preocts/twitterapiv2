@@ -16,7 +16,7 @@ class SearchRecent:
 
     def __init__(self) -> None:
         """
-        Create Search Recent client. Use methods to build query a .search() to run
+        Create Search Recent client. Use methods to build query and .fetch() to run
 
         The environment variable "TW_BEARER_TOKEN" is required; define with the
         applicaton bearer token. This can be defined manually or loaded with the
@@ -134,7 +134,7 @@ class SearchRecent:
         self._fields["max_results"] = max_results if max_results else None
         return self._new_client()
 
-    def search(
+    def fetch(
         self,
         query: str,
         *,

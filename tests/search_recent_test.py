@@ -18,13 +18,13 @@ def test_valid_search() -> None:
     # injected into the env. Use the confest autouse fixture.
     client = SearchRecent().max_results(10)
 
-    result = client.search("hello")
+    result = client.fetch("hello")
     assert isinstance(result, Recent)
     assert result.data
     next_token = client.next_token
     assert next_token
 
-    result = client.search("hello", page_token=next_token)
+    result = client.fetch("hello", page_token=next_token)
     assert client.next_token != next_token
 
 

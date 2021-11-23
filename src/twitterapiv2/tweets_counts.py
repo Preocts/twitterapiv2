@@ -21,7 +21,7 @@ class TweetsCounts:
         end_point: Literal["recent", "all"] = "recent",
     ) -> None:
         """
-        Create Tweets Counts client. Use methods to build query a .count() to run
+        Create Tweets Counts client. Use methods to build query and .fetch() to run
 
         end_point allows use of `/counts/all` endpoint for Academic Research access
 
@@ -84,9 +84,9 @@ class TweetsCounts:
         self._fields["granularity"] = granularity if granularity else None
         return self._new_client()
 
-    def count(self, query: str, *, page_token: Optional[str] = None) -> TweetCount:
+    def fetch(self, query: str, *, page_token: Optional[str] = None) -> TweetCount:
         """
-        Returns the count of Tweets from the last seven days that match a query
+        Fetches the count of Tweets from the last seven days that match a query
 
         Time-range can be controlled with start_time and end_time. Pagination
         only available with Acedemic research applications. `.next_token()` will

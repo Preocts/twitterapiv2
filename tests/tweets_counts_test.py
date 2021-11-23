@@ -18,7 +18,7 @@ def test_valid_count() -> None:
     # injected into the env. Use the confest autouse fixture.
     client = TweetsCounts()
 
-    result = client.count("hello")
+    result = client.fetch("hello")
     assert isinstance(result, TweetCount)
     assert result.meta.total_tweet_count
     assert not client.next_token
