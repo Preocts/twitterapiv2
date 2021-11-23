@@ -42,7 +42,7 @@ class SearchRecent:
             start = to_ISO8601(start)
         elif start is not None and not is_ISO8601(start):
             raise ValueError("Datetime format expected: 'YYYY-MM-DDTHH:mm:ssZ'")
-        self._fields["start_time"] = start if start else None
+        self._fields["start_time"] = start
         return self._new_client()
 
     def end_time(self, end: Union[str, datetime, None]) -> "SearchRecent":
@@ -55,7 +55,7 @@ class SearchRecent:
             end = to_ISO8601(end)
         elif end is not None and not is_ISO8601(end):
             raise ValueError("Datetime format expected: 'YYYY-MM-DDTHH:mm:ssZ'")
-        self._fields["end_time"] = end if end else None
+        self._fields["end_time"] = end
         return self._new_client()
 
     def since_id(self, since_id: Optional[str]) -> "SearchRecent":
