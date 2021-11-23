@@ -49,7 +49,7 @@ class TweetsCounts(Http):
         """Define start_time of query. YYYY-MM-DDTHH:mm:ssZ (ISO 8601/RFC 3339)"""
         if isinstance(start, datetime):
             start = to_ISO8601(start)
-        if not is_ISO8601(start):
+        elif start is not None and not is_ISO8601(start):
             raise ValueError("Datetime format expected: 'YYYY-MM-DDTHH:mm:ssZ'")
         self._fields["start_time"] = start if start else None
         return self._new_client()
@@ -62,7 +62,7 @@ class TweetsCounts(Http):
         """
         if isinstance(end, datetime):
             end = to_ISO8601(end)
-        if not is_ISO8601(end):
+        elif end is not None and not is_ISO8601(end):
             raise ValueError("Datetime format expected: 'YYYY-MM-DDTHH:mm:ssZ'")
         self._fields["end_time"] = end if end else None
         return self._new_client()
