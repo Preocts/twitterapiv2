@@ -10,11 +10,11 @@ from twitterapiv2.util.rules import is_ISO8601
 from twitterapiv2.util.rules import to_ISO8601
 
 
-class SearchRecent(Http):
+class SearchRecent:
 
     URL = "https://api.twitter.com/2/tweets/search/recent"
 
-    def __init__(self, num_pools: int = 10) -> None:
+    def __init__(self) -> None:
         """
         Create Search Recent client. Use methods to build query a .search() to run
 
@@ -22,7 +22,7 @@ class SearchRecent(Http):
         applicaton bearer token. This can be defined manually or loaded with the
         use of AuthClient.set_bearer_token().
         """
-        super().__init__(num_pools=num_pools)
+        self.http = Http()
         self._fields: Dict[str, Any] = {}
         self._next_token: Optional[str] = None
 
@@ -149,7 +149,7 @@ class SearchRecent(Http):
         """
         self._fields["query"] = query
         self._fields["next_token"] = page_token
-        result = Recent.build_from(super().get(self.URL, self.fields))
+        result = Recent.build_from(self.http.get(self.URL, self.fields))
         self._next_token = result.meta.next_token
         return result
 
