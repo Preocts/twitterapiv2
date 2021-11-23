@@ -11,7 +11,7 @@ from twitterapiv2.util.rules import is_ISO8601
 from twitterapiv2.util.rules import to_ISO8601
 
 
-class TweetsCounts(Http):
+class TweetsCounts:
 
     URL_RECENT = "https://api.twitter.com/2/tweets/counts/recent"
     URL_ALL = "https://api.twitter.com/2/tweets/counts/all"
@@ -19,7 +19,6 @@ class TweetsCounts(Http):
     def __init__(
         self,
         end_point: Literal["recent", "all"] = "recent",
-        num_pools: int = 10,
     ) -> None:
         """
         Create Tweets Counts client. Use methods to build query a .count() to run
@@ -30,7 +29,7 @@ class TweetsCounts(Http):
         applicaton bearer token. This can be defined manually or loaded with the
         use of AuthClient.set_bearer_token().
         """
-        super().__init__(num_pools=num_pools)
+        self.http = Http()
         self._fields: Dict[str, Any] = {}
         self._next_token: Optional[str] = None
         self._url = self.URL_ALL if end_point == "all" else self.URL_RECENT
@@ -95,7 +94,7 @@ class TweetsCounts(Http):
         """
         self._fields["query"] = query
         self._fields["next_token"] = page_token
-        result = TweetCount.build_from(super().get(self._url, self.fields))
+        result = TweetCount.build_from(self.http.get(self._url, self.fields))
         self._next_token = result.meta.next_token
         return result
 
@@ -104,13 +103,3 @@ class TweetsCounts(Http):
         new_client = TweetsCounts()
         new_client._fields.update(self._fields)
         return new_client
-
-
-if __name__ == "__main__":
-    from secretbox import SecretBox
-
-    SecretBox(auto_load=True)
-    client = TweetsCounts().granularity("day")
-    result = client.count("#NaNoWriMo")
-    print(result)
-    print(result.tweet_count)
