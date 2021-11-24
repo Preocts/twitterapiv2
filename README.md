@@ -44,7 +44,7 @@ Additional calls to the authentication process **will not** result in a new bear
 
 The search client performs a "Search Recent" from the Twitter V2 API. This search is limited to seven days of history and has a large number of inner objects to select from. By default, the search only returns the `text` of the tweet and the `id` of the tweet.
 
-After declaring a base `SearchRecent()` the fields of the search query can be set using the builder methods. These can be chained as they return a new `SearchRecent` with the fields carried forward. When executing a `.fetch()` the `page_token` allows for pagination of results.
+After declaring a base `SearchRecent()` the fields of the search query can be set using the builder methods. When executing a `.fetch()` the `page_token` allows for pagination of results.
 
 Rate limiting must be handled outside of the library. `SearchRecent.limit_remaining` will be an `int` representing the number of API calls remaining for requests are refused. `SearchRecent.limit_reset` is an unaware UTC `datetime` object of the next reset time (typically 15 minutes). If a search has not been invoked the `.limit_remaining` will default to `-1` and `limit_reset` to `.utcnow()`.
 
@@ -67,12 +67,11 @@ auth = AuthClient()
 auth.set_bearer_token()
 search_string = "#100DaysOfCode -is:retweet"
 
-mysearch = (
-    SearchRecent()
-    .start_time("2021-11-10T00:00:00Z")
-    .expansions("author_id,attachments.poll_ids")
-    .max_results(100)
-)
+mysearch = SearchRecent()
+mysearch.start_time("2021-11-10T00:00:00Z")
+mysearch.expansions("author_id,attachments.poll_ids")
+mysearch.max_results(100)
+
 while True:
     log.info("Retrieving Tweets...")
     try:
