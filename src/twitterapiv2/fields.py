@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Any
 from typing import Dict
+from typing import Literal
 from typing import Optional
 from typing import Union
 
@@ -10,6 +11,7 @@ from twitterapiv2.util.rules import to_ISO8601
 
 class Fields:
     def __init__(self) -> None:
+        """Internal: Abstracts all field builder methods for implimentations"""
         self._fields: Dict[str, Any] = {}
 
     @property
@@ -103,6 +105,13 @@ class Fields:
         if max_results is not None and max_results not in range(10, 101):
             raise ValueError("max_results must be between 10 and 100")
         self._fields["max_results"] = max_results if max_results else None
+
+    def granularity(
+        self,
+        granularity: Optional[Literal["minute", "hour", "day"]],
+    ) -> None:
+        """Define the granularity that you want the timeseries count data grouped"""
+        self._fields["granularity"] = granularity if granularity else None
 
     def query(self, query: Optional[str]) -> None:
         """Sets a query string"""
