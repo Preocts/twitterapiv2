@@ -36,7 +36,7 @@ class SearchRecent:
 
     @property
     def fields(self) -> Dict[str, Any]:
-        """..."""
+        """Returns fields that have been defined"""
         return self.field_builder.fields
 
     @property
