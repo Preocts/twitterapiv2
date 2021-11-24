@@ -103,3 +103,11 @@ class Fields:
         if max_results is not None and max_results not in range(10, 101):
             raise ValueError("max_results must be between 10 and 100")
         self._fields["max_results"] = max_results if max_results else None
+
+    def query(self, query: Optional[str]) -> None:
+        """Sets a query string"""
+        self._fields["query"] = query
+
+    def next_token(self, next_token: Optional[str]) -> None:
+        """Sets next_token for pagination results"""
+        self._fields["next_token"] = next_token

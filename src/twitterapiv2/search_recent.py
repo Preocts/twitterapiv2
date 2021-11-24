@@ -57,8 +57,8 @@ class SearchRecent:
         `next_token` parameter. These default to None and can be
         safely referenced prior to, and after, searches.
         """
-        self.field_builder._fields["query"] = query
-        self.field_builder._fields["next_token"] = page_token
+        self.field_builder.query(query)
+        self.field_builder.next_token(page_token)
         result = Recent.build_from(self.http.get(self.URL, self.fields))
         self._next_token = result.meta.next_token
         return result
