@@ -73,7 +73,7 @@ mysearch.expansions("author_id,attachments.poll_ids")
 mysearch.max_results(100)
 
 while True:
-    log.info("Retrieving Tweets...")
+    print("Retrieving Tweets...")
     try:
         response = client.fetch(search_string, page_token=client.next_token)
     except InvalidResponseError as err:
