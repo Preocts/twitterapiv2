@@ -110,7 +110,7 @@ def test_builder_user_fields() -> None:
 def test_builder_max_results() -> None:
     client = Fields()
     client.max_results(12)
-    assert client.fields["max_results"] == "12"
+    assert client.fields["max_results"] == 12
 
     client.max_results(None)
     assert client.fields.get("max_results") is None

@@ -16,8 +16,8 @@ class Fields:
 
     @property
     def fields(self) -> Dict[str, Any]:
-        """Returns fields that have been defined"""
-        return {key: str(value) for key, value in self._fields.items() if value}
+        """Returns fields"""
+        return self._fields
 
     def start_time(self, start: Union[str, datetime, None]) -> None:
         """Define start_time of query. YYYY-MM-DDTHH:mm:ssZ (ISO 8601/RFC 3339)"""
@@ -116,7 +116,3 @@ class Fields:
     def query(self, query: Optional[str]) -> None:
         """Sets a query string"""
         self._fields["query"] = query
-
-    def next_token(self, next_token: Optional[str]) -> None:
-        """Sets next_token for pagination results"""
-        self._fields["next_token"] = next_token

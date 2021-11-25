@@ -1,5 +1,3 @@
-from datetime import datetime
-from time import sleep
 from typing import NamedTuple
 
 import pytest
@@ -7,7 +5,6 @@ import vcr
 from twitterapiv2.exceptions import InvalidResponseError
 from twitterapiv2.exceptions import ThrottledError
 from twitterapiv2.http import Http
-from urllib3 import PoolManager
 
 
 api_recorder = vcr.VCR(
@@ -20,16 +17,6 @@ api_recorder = vcr.VCR(
 class MockReponse(NamedTuple):
     status: int
     data: bytes
-
-
-def test_default_values() -> None:
-    client = Http()
-
-    assert client.limit_remaining == -1
-    reset = client.limit_reset
-    sleep(0.5)
-    assert reset < datetime.now()
-    assert isinstance(client.http, PoolManager)
 
 
 def test_data2dict() -> None:
@@ -64,14 +51,15 @@ def test_response_handing_200() -> None:
 def test_last_response_headers() -> None:
     client = Http()
     fields = {"max_results": 10, "query": "test"}
-    remaining = client.limit_remaining
-    reset = client.limit_reset
-    client.get("https://api.twitter.com/2/tweets/search/recent", fields)
-    assert client.limit_remaining > remaining
-    assert client.limit_reset != reset
 
-    remaining = client.limit_remaining
-    reset = client.limit_reset
     client.get("https://api.twitter.com/2/tweets/search/recent", fields)
-    assert client.limit_remaining == remaining - 1
-    assert client.limit_reset == reset
+    assert client.last_response
+    assert client.last_response.x_rate_limit_remaining
+    assert client.last_response.x_rate_limit_reset
+
+    remaining = client.last_response.x_rate_limit_remaining
+    reset = client.last_response.x_rate_limit_reset
+    client.get("https://api.twitter.com/2/tweets/search/recent", fields)
+    assert client.last_response
+    assert client.last_response.x_rate_limit_remaining == str(int(remaining) - 1)
+    assert client.last_response.x_rate_limit_reset == reset

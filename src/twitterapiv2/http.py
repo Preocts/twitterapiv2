@@ -1,7 +1,6 @@
 import json
 import logging
 import os
-from datetime import datetime
 from typing import Any
 from typing import Dict
 from typing import Optional
@@ -26,24 +25,7 @@ class Http:
     def __init__(self, num_pools: int = 10) -> None:
         self.log = logging.getLogger(__name__)
         self.http = self.connection(num_pools)
-        self._last_response: Optional[ResponseHeader] = None
-
-    @property
-    def limit_remaining(self) -> int:
-        """Number of calls remaining before next limit reset"""
-        if self._last_response is None:
-            return -1
-        else:
-            return int(self._last_response.x_rate_limit_remaining)
-
-    @property
-    def limit_reset(self) -> datetime:
-        """Datetime of next limit reset as UTC unaware datetime"""
-        if self._last_response is None:
-            return datetime.now()
-        else:
-            ts = int(self._last_response.x_rate_limit_reset)
-            return datetime.utcfromtimestamp(ts)
+        self.last_response: Optional[ResponseHeader] = None
 
     def connection(self, num_pools: int = 10) -> urllib3.PoolManager:
         """Returns HTTP pool manager with retries and backoff"""
@@ -78,7 +60,7 @@ class Http:
     ) -> Dict[str, Any]:
         """Override for specific implementations"""
         resp = self.http.request("GET", url, fields, self._headers())
-        self._last_response = ResponseHeader.build_from(resp)
+        self.last_response = ResponseHeader.build_from(resp)
         self._raise_on_response(resp, url)
         return self._data2dict(resp.data)
 
@@ -101,7 +83,8 @@ class Http:
     def _raise_on_response(self, resp: Any, url: str) -> None:
         """Custom handling of invalid status codes"""
         if resp.status == 429:
-            raise ThrottledError(f"Throttled until {self.limit_reset}")
+            rst = self.last_response.x_rate_limit_reset if self.last_response else None
+            raise ThrottledError(f"Throttled until '{rst}'")
         if resp.status not in range(200, 300):
             self.log.error("Failed: %s", resp.data)
             raise InvalidResponseError(f"{resp.status} response from {url}")
