@@ -116,7 +116,3 @@ class Fields:
     def query(self, query: Optional[str]) -> None:
         """Sets a query string"""
         self._fields["query"] = query
-
-    def next_token(self, next_token: Optional[str]) -> None:
-        """Sets next_token for pagination results"""
-        self._fields["next_token"] = next_token
