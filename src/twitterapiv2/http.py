@@ -60,7 +60,7 @@ class Http:
     ) -> Dict[str, Any]:
         """Override for specific implementations"""
         resp = self.http.request("GET", url, fields, self._headers())
-        self._last_response = ResponseHeader.build_from(resp)
+        self.last_response = ResponseHeader.build_from(resp)
         self._raise_on_response(resp, url)
         return self._data2dict(resp.data)
 
