@@ -83,11 +83,8 @@ class Http:
     def _raise_on_response(self, resp: Any, url: str) -> None:
         """Custom handling of invalid status codes"""
         if resp.status == 429:
-            if self.last_response is not None:
-                reset = self.last_response.x_rate_limit_reset
-            else:
-                reset = "Unknown"
-            raise ThrottledError(f"Throttled until '{reset}'")
+            rst = self.last_response.x_rate_limit_reset if self.last_response else None
+            raise ThrottledError(f"Throttled until '{rst}'")
         if resp.status not in range(200, 300):
             self.log.error("Failed: %s", resp.data)
             raise InvalidResponseError(f"{resp.status} response from {url}")
