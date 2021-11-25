@@ -38,6 +38,6 @@ class SearchRecent(ClientIntrfc):
         can be used to determine when no further results remain (is None)
         """
         if not self.fields.get("query"):
-            raise ValueError(".query() is a required field to be set.")
+            raise ValueError(".query() is a required field to be defined.")
 
         return Recent.build_from(self.get(URL))

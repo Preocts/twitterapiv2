@@ -14,8 +14,9 @@ def test_valid_count() -> None:
     # NOTE: To re-record this test a valid bearer token must be
     # injected into the env. Use the confest autouse fixture.
     client = TweetsCounts()
+    client.query("hello")
 
-    result = client.fetch("hello")
+    result = client.fetch()
     assert isinstance(result, TweetCount)
     assert result.meta.total_tweet_count
-    assert not client.next_token
+    assert not client.more
