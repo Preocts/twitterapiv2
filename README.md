@@ -44,7 +44,7 @@ Additional calls to the authentication process **will not** result in a new bear
 
 The search client performs a "Search Recent" from the Twitter V2 API. This search is limited to seven days of history and has a large number of inner objects to select from. By default, the search only returns the `text` of the tweet and the `id` of the tweet.
 
-After declaring a base `SearchRecent()` the fields of the search query can be set using the builder methods. When executing a `.fetch()` the `page_token` allows for pagination of results.
+After declaring a base `SearchRecent()` the fields of the search query can be set using the builder methods. When executing a `.fetch()` the `page_token` is automatically set to the next results. Checking the `.more` property after the first `.fetch()` will indicate if more results remain. Fetch loops should stop when `.more` is `False`.
 
 Rate limiting must be handled outside of the library. `SearchRecent.limit_remaining` will be an `int` representing the number of API calls remaining for requests are refused. `SearchRecent.limit_reset` is an unaware UTC `datetime` object of the next reset time (typically 15 minutes). If a search has not been invoked the `.limit_remaining` will default to `-1` and `limit_reset` to `.utcnow()`.
 
@@ -57,36 +57,43 @@ https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/ge
 Use example:
 ```py
 from datetime import datetime
-from twitterapiv2.auth_client import AuthClient
-from twitterapiv2.search_recent import SearchRecent
+from time import sleep
+
 from secretbox import SecretBox
+from twitterapiv2.auth_client import AuthClient
+from twitterapiv2.exceptions import InvalidResponseError
+from twitterapiv2.exceptions import ThrottledError
+from twitterapiv2.search_recent import SearchRecent
+
 
 SecretBox(auto_load=True)
 
 auth = AuthClient()
 auth.set_bearer_token()
-search_string = "#100DaysOfCode -is:retweet"
 
 mysearch = SearchRecent()
-mysearch.start_time("2021-11-10T00:00:00Z")
+mysearch.start_time("2021-11-23T00:00:00Z")
 mysearch.expansions("author_id,attachments.poll_ids")
-mysearch.max_results(100)
+mysearch.max_results(10)
+mysearch.query("#100DaysOfCode -is:retweet")
 
 while True:
     print("Retrieving Tweets...")
     try:
-        response = client.fetch(search_string, page_token=client.next_token)
+        response = mysearch.fetch()
     except InvalidResponseError as err:
         print(f"Invalid response from HTTP: '{err}'")
         break
     except ThrottledError:
-        print(f"Rate limit reached, resets at: {client.limit_reset} UTC")
-        while datetime.utcnow() <= client.limit_reset:
+        print(f"Rate limit reached, resets at: {mysearch.limit_reset} UTC")
+        while datetime.utcnow() <= mysearch.limit_reset:
             print(f"Waiting for limit reset, currently: {datetime.utcnow()} UTC...")
-            sleep(SLEEP_TIME)
+            sleep(60)
         continue
+
     # Do something with pulled data in response
-    if not client.next_token:
+
+    if not mysearch.more:
         print("No additional pages to poll.")
         break
 ```
