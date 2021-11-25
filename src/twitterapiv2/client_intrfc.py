@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any
 from typing import Dict
 from typing import Optional
@@ -12,6 +13,23 @@ class ClientIntrfc:
         self.field_builder = Fields()
         self.http = Http()
         self._next_token: Optional[str] = None
+
+    @property
+    def limit_remaining(self) -> int:
+        """Number of calls remaining before next limit reset"""
+        if self.http.last_response is None:
+            return -1
+        else:
+            return int(self.http.last_response.x_rate_limit_remaining)
+
+    @property
+    def limit_reset(self) -> datetime:
+        """Datetime of next limit reset as UTC unaware datetime"""
+        if self.http.last_response is None:
+            return datetime.now()
+        else:
+            ts = int(self.http.last_response.x_rate_limit_reset)
+            return datetime.utcfromtimestamp(ts)
 
     @property
     def fields(self) -> Dict[str, Any]:
@@ -34,4 +52,4 @@ class ClientIntrfc:
 
     def fetch(self) -> Any:
         """Override with specific implementation"""
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
