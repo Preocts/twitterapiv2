@@ -16,8 +16,8 @@ class Fields:
 
     @property
     def fields(self) -> Dict[str, Any]:
-        """Returns fields that have been defined"""
-        return {key: str(value) for key, value in self._fields.items() if value}
+        """Returns fields"""
+        return self._fields
 
     def start_time(self, start: Union[str, datetime, None]) -> None:
         """Define start_time of query. YYYY-MM-DDTHH:mm:ssZ (ISO 8601/RFC 3339)"""
