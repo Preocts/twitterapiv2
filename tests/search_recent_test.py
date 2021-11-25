@@ -1,3 +1,4 @@
+import pytest
 import vcr
 from twitterapiv2.model.recent.recent import Recent
 from twitterapiv2.search_recent import SearchRecent
@@ -27,3 +28,9 @@ def test_valid_search() -> None:
 
     result = client.fetch()
     assert client.fields.get("next_token") != next_token
+
+
+def test_query_required() -> None:
+    client = SearchRecent()
+    with pytest.raises(ValueError):
+        client.fetch()

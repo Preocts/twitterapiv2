@@ -1,3 +1,4 @@
+import pytest
 import vcr
 from twitterapiv2.model.tweet_count.tweet_count import TweetCount
 from twitterapiv2.tweets_counts import TweetsCounts
@@ -20,3 +21,9 @@ def test_valid_count() -> None:
     assert isinstance(result, TweetCount)
     assert result.meta.total_tweet_count
     assert not client.more
+
+
+def test_query_required() -> None:
+    client = TweetsCounts()
+    with pytest.raises(ValueError):
+        client.fetch()
