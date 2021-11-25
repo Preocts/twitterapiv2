@@ -18,7 +18,7 @@ class ClientIntrfc:
         """Returns fields that have been defined (removed NoneTypes)"""
         fields = self.field_builder.fields
         fields["next_token"] = self._next_token
-        return {key: str(value) for key, value in fields.items() if value}
+        return {key: value for key, value in fields.items() if value}
 
     @property
     def more(self) -> bool:
@@ -32,6 +32,6 @@ class ClientIntrfc:
         self._next_token = meta.get("next_token") if meta else None
         return result
 
-    def fetch(self) -> None:
+    def fetch(self) -> Any:
         """Override with specific implementation"""
         raise NotImplementedError
