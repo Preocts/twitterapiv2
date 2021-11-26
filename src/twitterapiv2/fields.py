@@ -118,10 +118,10 @@ class Fields:
         """Sets a query string"""
         self._fields["query"] = query
 
-    def id(self, id_: Optional[str]) -> None:
+    def ids(self, ids: Optional[str]) -> None:
         """A single or comma separated list of tweet ids. Max: 100"""
-        if id_ and len(id_.split(",")) > 100:
+        if ids and len(ids.split(",")) > 100:
             raise ValueError("Maximum of 100 IDs can be provided.")
-        elif id_:
-            id_ = re.sub(r"\s", "", id_)
-        self._fields["id"] = id_ if id_ else None
+        elif ids:
+            ids = re.sub(r"\s", "", ids)
+        self._fields["ids"] = ids if ids else None

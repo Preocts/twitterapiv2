@@ -131,17 +131,17 @@ def test_builder_granularity() -> None:
     assert client.fields.get("granularity") is None
 
 
-def test_builder_id() -> None:
+def test_builder_ids() -> None:
     too_many = ",".join(list("a" * 101))
     client = Fields()
-    client.id("123")
-    assert client.fields["id"] == "123"
+    client.ids("123")
+    assert client.fields["ids"] == "123"
 
-    client.id("123, 348             ")
-    assert client.fields["id"] == "123,348"
+    client.ids("123, 348             ")
+    assert client.fields["ids"] == "123,348"
 
-    client.id(None)
-    assert client.fields["id"] is None
+    client.ids(None)
+    assert client.fields["ids"] is None
 
     with pytest.raises(ValueError):
-        client.id(too_many)
+        client.ids(too_many)
