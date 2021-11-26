@@ -140,5 +140,8 @@ def test_builder_id() -> None:
     client.id("123, 348             ")
     assert client.fields["id"] == "123,348"
 
+    client.id(None)
+    assert client.fields["id"] is None
+
     with pytest.raises(ValueError):
         client.id(too_many)
