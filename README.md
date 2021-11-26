@@ -18,11 +18,12 @@ During a re-write of [this project](https://github.com/Preocts/twwordmap) I star
 - Authentication for bearer token
 - `tweets/search/recent` endpoint
 - `tweets/counts/recent` endpoint
+- `tweets/lookup` endpoint
+- Interface for `/tweets/` endpoint clients
 
 ### On Deck
 - Better documentation
 - Internal rate limit handlers
-- Interface for `/tweets/` endpoint clients
 
 ---
 
