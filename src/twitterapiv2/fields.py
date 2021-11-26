@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 from typing import Any
 from typing import Dict
@@ -116,3 +117,11 @@ class Fields:
     def query(self, query: Optional[str]) -> None:
         """Sets a query string"""
         self._fields["query"] = query
+
+    def ids(self, ids: Optional[str]) -> None:
+        """A single or comma separated list of tweet ids. Max: 100"""
+        if ids and len(ids.split(",")) > 100:
+            raise ValueError("Maximum of 100 IDs can be provided.")
+        elif ids:
+            ids = re.sub(r"\s", "", ids)
+        self._fields["ids"] = ids if ids else None
