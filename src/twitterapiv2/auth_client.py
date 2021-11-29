@@ -6,6 +6,8 @@ https://developer.twitter.com/en/docs/authentication/oauth-2-0/application-only
 import logging
 import os
 from base64 import b64encode
+from typing import Any
+from typing import Dict
 from urllib import parse
 
 from twitterapiv2.http import Http
@@ -48,21 +50,10 @@ class AuthClient(Http):
         # return a new (changed) bearer once one is granted until that token
         # is revoked.
         self.log.debug("Requesting bearer token with consumer credentials...")
-        headers = {
-            "Content-Type": "applicaton/x-www-form-urlencoded;charset=UTF-8",
-            "Authorization": "Basic " + self.encoded_credentials(),
-        }
-        fields = {"grant_type": "client_credentials"}
         url = self.TWITTER_API + "/oauth2/token"
+        fields = {"grant_type": "client_credentials"}
 
-        # Override urllib3's preference to encode body on POST
-        resp = self.http.request_encode_url(
-            "POST",
-            url=url,
-            fields=fields,
-            headers=headers,
-        )
-        result = super()._data2dict(resp.data)
+        result = self._post_request(url=url, fields=fields)
 
         if result.get("token_type", "") != "bearer":
             self.log.error(result)
@@ -74,3 +65,33 @@ class AuthClient(Http):
 
         os.environ["TW_BEARER_TOKEN"] = result.get("access_token", "")
         self.log.debug("Bearer token loaded to 'TW_BEARER_TOKEN'")
+
+    def revoke_bearer_token(self) -> None:
+        """Revoke and delete token in `TW_BEARER_TOKEN` environ variable"""
+        raise NotImplementedError("Twitter functionality is AWOL here. Use dashboard!")
+        # token = os.getenv("TW_BEARER_TOKEN")
+        # if not token:
+        #     raise ValueError(f"No bearer token loaded: TW_BEARER_TOKEN={token}")
+
+        # url = self.TWITTER_API + "/oauth2/invalidate_token"
+        # fields = {"access_token": token}
+        # result = self._post_request(url=url, fields=fields)
+
+        # if "access_token" not in result or result.get("access_token") != token:
+        #     self.log.error("Unexpected response: '%s'", result)
+        #     raise ValueError("Unexpected response! Token may still be active.")
+
+    def _post_request(self, url: str, fields: Dict[str, str]) -> Dict[str, Any]:
+        """Internal use: makes validate and invalidate calls, returns result"""
+        headers = {
+            "Content-Type": "applicaton/x-www-form-urlencoded;charset=UTF-8",
+            "Authorization": "Basic " + self.encoded_credentials(),
+        }
+        # Override urllib3's preference to encode body on POST
+        resp = self.http.request_encode_url(
+            "POST",
+            url=url,
+            fields=fields,
+            headers=headers,
+        )
+        return self._data2dict(resp.data)
