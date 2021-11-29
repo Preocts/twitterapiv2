@@ -49,6 +49,21 @@ def test_set_bearer_token() -> None:
     assert os.environ["TW_BEARER_TOKEN"]
 
 
+# @api_recorder.use_cassette()
+def test_revoke_bearer_token() -> None:
+    # NOTE: To re-record this test you need to inject valid creds to conftest
+
+    # assert os.getenv("TW_BEARER_TOKEN") is None
+    client = AuthClient()
+    # TODO: (preocts) This endpoint does't work. No response from Twitter
+    with pytest.raises(NotImplementedError):
+        client.revoke_bearer_token()
+    # client.set_bearer_token()
+    # assert os.environ["TW_BEARER_TOKEN"]
+    # client.revoke_bearer_token()
+    # assert os.getenv("TW_BEARER_TOKEN") is None
+
+
 @api_recorder.use_cassette()
 def test_invalid_bearer_request() -> None:
     client = AuthClient()
