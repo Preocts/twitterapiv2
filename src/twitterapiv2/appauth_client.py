@@ -45,6 +45,11 @@ class AppAuthClient(Http):
         return b64encode(union).decode()
 
     def set_bearer_token(self) -> None:
+        """Fetches bearer token, setting it to `TW_BEARER_TOKEN` in environment"""
+        os.environ["TW_BEARER_TOKEN"] = self.fetch_bearer_token()
+        self.log.debug("Bearer token loaded to 'TW_BEARER_TOKEN'")
+
+    def fetch_bearer_token(self) -> str:
         """Set the `TW_BEARER_TOKEN` environment variable"""
         # Twitter does not frequently auto-expire bearer tokens. This will not
         # return a new (changed) bearer once one is granted until that token
@@ -63,8 +68,7 @@ class AppAuthClient(Http):
             self.log.error(result)
             raise ValueError("No bearer token returned")
 
-        os.environ["TW_BEARER_TOKEN"] = result.get("access_token", "")
-        self.log.debug("Bearer token loaded to 'TW_BEARER_TOKEN'")
+        return result["access_token"]
 
     def revoke_bearer_token(self) -> None:
         """Revoke and delete token in `TW_BEARER_TOKEN` environ variable"""
