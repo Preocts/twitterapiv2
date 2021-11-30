@@ -13,7 +13,7 @@ from urllib import parse
 from twitterapiv2.http import Http
 
 
-class AuthClient(Http):
+class AppAuthClient(Http):
     """
     Authentication requires the following environment variables exist:
         TW_CONSUMER_KEY

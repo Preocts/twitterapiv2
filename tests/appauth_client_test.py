@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 import vcr
-from twitterapiv2.auth_client import AuthClient
+from twitterapiv2.appauth_client import AppAuthClient
 
 
 MOCK_KEY = "xvz1evFS4wEEPTGEFPHBog"
@@ -18,7 +18,7 @@ api_recorder = vcr.VCR(
 
 
 def test_encoded_credentials() -> None:
-    client = AuthClient()
+    client = AppAuthClient()
     env = {
         "TW_CONSUMER_KEY": MOCK_KEY,
         "TW_CONSUMER_SECRET": MOCK_SECRET,
@@ -29,7 +29,7 @@ def test_encoded_credentials() -> None:
 
 
 def test_require_environ_vars() -> None:
-    client = AuthClient()
+    client = AppAuthClient()
     os.environ.pop("TW_CONSUMER_KEY", None)
     with pytest.raises(KeyError):
         client.encoded_credentials()
@@ -44,7 +44,7 @@ def test_require_environ_vars() -> None:
 def test_set_bearer_token() -> None:
     # NOTE: To re-record this test you need to inject valid creds to conftest
     assert os.getenv("TW_BEARER_TOKEN") is None
-    client = AuthClient()
+    client = AppAuthClient()
     client.set_bearer_token()
     assert os.environ["TW_BEARER_TOKEN"]
 
@@ -54,7 +54,7 @@ def test_revoke_bearer_token() -> None:
     # NOTE: To re-record this test you need to inject valid creds to conftest
 
     # assert os.getenv("TW_BEARER_TOKEN") is None
-    client = AuthClient()
+    client = AppAuthClient()
     # TODO: (preocts) This endpoint does't work. No response from Twitter
     with pytest.raises(NotImplementedError):
         client.revoke_bearer_token()
@@ -66,7 +66,7 @@ def test_revoke_bearer_token() -> None:
 
 @api_recorder.use_cassette()
 def test_invalid_bearer_request() -> None:
-    client = AuthClient()
+    client = AppAuthClient()
     with pytest.raises(ValueError):
         client.set_bearer_token()
 
@@ -74,6 +74,6 @@ def test_invalid_bearer_request() -> None:
 @api_recorder.use_cassette()
 def test_invalid_bearer_response() -> None:
     # NOTE: Uses edited valid recording missing access_token
-    client = AuthClient()
+    client = AppAuthClient()
     with pytest.raises(ValueError):
         client.set_bearer_token()
