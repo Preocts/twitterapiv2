@@ -12,5 +12,7 @@ def mask_environ() -> Generator[None, None, None]:
         # NOTE: Set these to actual creds ONLY during re-recording of cassettes
         os.environ["TW_CONSUMER_KEY"] = "MOCK"
         os.environ["TW_CONSUMER_SECRET"] = "MOCK"
+        os.environ["TW_ACCESS_TOKEN"] = "MOCK"
+        os.environ["TW_ACCESS_SECRET"] = "MOCK"
         os.environ.pop("TW_BEARER_TOKEN", None)
         yield None
