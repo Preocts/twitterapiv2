@@ -17,7 +17,7 @@ class UserAuthClient:
         self.http = Http()
         self.base_fields = {"callback_http": callback_http}
 
-    def _key_collect(self) -> Dict[str, str]:
+    def key_collect(self) -> Dict[str, str]:
         """Collect all keys needed for headers"""
         consumer_key = os.getenv("TW_CONSUMER_KEY", None)
         access_token = os.getenv("TW_ACCESS_TOKEN", None)
@@ -35,7 +35,7 @@ class UserAuthClient:
         }
         return keys
 
-    def _generate_signature_base_string(
+    def generate_signature_base_string(
         self,
         method: str,
         route: str,
