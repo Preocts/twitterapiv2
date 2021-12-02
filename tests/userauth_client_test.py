@@ -33,6 +33,24 @@ MOCK_VALUES: Dict[str, Any] = {
         "%252C%2520a%2520signed%2520OAuth%2520request%2521"
     ),
     "expected_signature": "hCtSmYh+iHYCEqBWrE7C7hYmtUk=",
+    "expected_header": (
+        'OAuth oauth_consumer_key="xvz1evFS4wEEPTGEFPHBog", '
+        'oauth_nonce="kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg", '
+        'oauth_signature="tnnArxj06cWHq44gCs1OSKk%2FjLY%3D", '
+        'oauth_signature_method="HMAC-SHA1", '
+        'oauth_timestamp="1318622958", '
+        'oauth_token="370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb", '
+        'oauth_version="1.0"'
+    ),
+}
+MOCK_HEADER_VALUES = {
+    "oauth_consumer_key": "xvz1evFS4wEEPTGEFPHBog",
+    "oauth_nonce": "kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg",
+    "oauth_signature": "tnnArxj06cWHq44gCs1OSKk/jLY=",
+    "oauth_signature_method": "HMAC-SHA1",
+    "oauth_timestamp": "1318622958",
+    "oauth_token": "370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb",
+    "oauth_version": "1.0",
 }
 MOCK_TOKENS = {
     "TW_CONSUMER_KEY": "xvz1evFS4wEEPTGEFPHBog",
@@ -44,7 +62,7 @@ MOCK_TOKENS = {
 
 def test_key_collect() -> None:
     client = UserAuthClient()
-    assert client.key_collect()
+    assert client.generate_header_key_values()
 
 
 def test_key_collect_raises() -> None:
@@ -52,13 +70,13 @@ def test_key_collect_raises() -> None:
     with patch.dict(os.environ):
         del os.environ["TW_CONSUMER_KEY"]
         with pytest.raises(KeyError):
-            client.key_collect()
+            client.generate_header_key_values()
 
 
 def test_generate_paramter_string() -> None:
     client = UserAuthClient()
     with patch.dict(os.environ, MOCK_TOKENS):
-        keys = client.key_collect()
+        keys = client.generate_header_key_values()
         keys["oauth_nonce"] = MOCK_VALUES["oauth_nonce"]
         keys["oauth_timestamp"] = MOCK_VALUES["oauth_timestamp"]
         parameter_string = client.generate_parameter_string(
@@ -92,3 +110,9 @@ def test_generate_signature_string_raises() -> None:
         del os.environ["TW_CONSUMER_SECRET"]
         with pytest.raises(KeyError):
             client.generate_signature_string("")
+
+
+def test_generate_oauth_header() -> None:
+    client = UserAuthClient()
+    header = client.generate_oauth_header(MOCK_HEADER_VALUES)
+    assert header == MOCK_VALUES["expected_header"]

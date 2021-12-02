@@ -1,3 +1,16 @@
+"""
+Authenticate using OAuth1 for user
+
+Creating signature:
+https://developer.twitter.com/en/docs/authentication/oauth-1-0a/creating-a-signature
+
+Building header string:
+https://developer.twitter.com/en/docs/authentication/oauth-1-0a/authorizing-a-request
+
+3-step Auth process:
+https://developer.twitter.com/en/docs/authentication/oauth-1-0a/obtaining-user-access-tokens
+https://developer.twitter.com/en/docs/authentication/api-reference/request_token
+"""
 import base64
 import hmac
 import logging
@@ -20,8 +33,17 @@ class UserAuthClient:
         self.http = Http()
         self.callback_http = callback_http
 
-    def key_collect(self) -> Dict[str, str]:
-        """Collect all keys needed for headers"""
+    def generate_oauth_header(self, header_values: Dict[str, str]) -> str:
+        """Generated OAuth header string"""
+        segments: List[str] = []
+        for key, value in header_values.items():
+            qkey = parse.quote(key, safe="")
+            qvalue = parse.quote(value, safe="")
+            segments.append(f'{qkey}="{qvalue}"')
+        return "OAuth " + ", ".join(segments)
+
+    def generate_header_key_values(self) -> Dict[str, str]:
+        """Collect all key:values needed for headers excluding `oauth_signature`"""
         consumer_key = os.getenv("TW_CONSUMER_KEY", None)
         access_token = os.getenv("TW_ACCESS_TOKEN", None)
         if consumer_key is None or access_token is None:
