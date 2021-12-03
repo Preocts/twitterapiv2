@@ -28,7 +28,7 @@ BASE_URL = "https://api.twitter.com"
 
 
 class UserAuthClient:
-    def __init__(self, callback_http: str = "https://localhost") -> None:
+    def __init__(self, callback_http: str = "https://127.0.0.1") -> None:
         self.log = logging.getLogger(__name__)
         self.http = Http()
         self.callback_http = callback_http
@@ -94,3 +94,27 @@ class UserAuthClient:
         ).encode("utf-8")
         hash_bytes = hmac.new(combined, base_bytes, sha1).digest()
         return base64.encodebytes(hash_bytes).decode("utf-8").rstrip("\n")
+
+    def request_token(self) -> None:
+        """Leg 1 of 3"""
+        header_values = self.generate_header_key_values()
+        fields = {"oauth_callback": self.callback_http, **header_values}
+        param = self.generate_parameter_string(fields)
+        base = self.generate_base_string("POST", "/oauth/request_token", param)
+        header_values["oauth_signature"] = self.generate_signature_string(base)
+        headers = {"Authorization": self.generate_oauth_header(header_values)}
+        url = f"{BASE_URL}/oauth/request_token?oauth_callback="
+        url += parse.quote(self.callback_http)
+
+        resp = self.http.http.request("POST", url, headers=headers)
+        print(resp.status)
+        print(resp.data)
+
+
+if __name__ == "__main__":
+    from secretbox import SecretBox
+
+    logging.basicConfig(level="DEBUG")
+    box = SecretBox(auto_load=True)
+    client = UserAuthClient()
+    client.request_token()
