@@ -28,7 +28,7 @@ BASE_URL = "https://api.twitter.com"
 
 
 class UserAuthClient:
-    def __init__(self, callback_http: str = "https://127.0.0.1") -> None:
+    def __init__(self, callback_http: str = "oob") -> None:
         self.log = logging.getLogger(__name__)
         self.http = Http()
         self.callback_http = callback_http
@@ -106,9 +106,11 @@ class UserAuthClient:
         url = f"{BASE_URL}/oauth/request_token?oauth_callback="
         url += parse.quote(self.callback_http)
 
-        resp = self.http.http.request("POST", url, headers=headers)
-        print(resp.status)
-        print(resp.data)
+        result = self.http.http.request("POST", url, headers=headers)
+        # result = self.http.post(url, headers=headers)
+        oauth_token, oauth_secret, _ = result.data.decode("utf-8").split("&", 3)
+        print("Go here next:")
+        print(f"https://api.twitter.com/oauth/authorize?oauth_token={oauth_token}")
 
 
 if __name__ == "__main__":

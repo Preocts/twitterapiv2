@@ -64,9 +64,17 @@ class Http:
         self._raise_on_response(resp, url)
         return self._data2dict(resp.data)
 
-    def post(self) -> None:
+    def post(
+        self,
+        url: str,
+        payload: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, str]] = None,
+    ) -> Dict[str, Any]:
         """Override for specific implementations"""
-        raise NotImplementedError  # pragma: no cover
+        resp = self.http.request("POST", url, body=json.dumps(payload), headers=headers)
+        self.last_response = ResponseHeader.build_from(resp)
+        self._raise_on_response(resp, url)
+        return self._data2dict(resp.data)
 
     def put(self) -> None:
         """Override for specific implementations"""
