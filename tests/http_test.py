@@ -1,4 +1,7 @@
+import json
 from typing import NamedTuple
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
 import pytest
 import vcr
@@ -63,3 +66,18 @@ def test_last_response_headers() -> None:
     assert client.last_response
     assert client.last_response.x_rate_limit_remaining == str(int(remaining) - 1)
     assert client.last_response.x_rate_limit_reset == reset
+
+
+def test_mock_post() -> None:
+    data = json.dumps({"test": "mock"}).encode()
+    client = Http()
+    resp = MagicMock(status=200, data=data)
+    with patch.object(client.http, "request", MagicMock(return_value=resp)) as post:
+        result = client.post("mockurl", {"payload": "test"}, {"header": "test"})
+        post.assert_called_once_with(
+            "POST",
+            "mockurl",
+            body='{"payload": "test"}',
+            headers={"header": "test"},
+        )
+        assert result == {"test": "mock"}
