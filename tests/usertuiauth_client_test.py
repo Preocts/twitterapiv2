@@ -1,9 +1,11 @@
 import os
 from typing import Any
 from typing import Dict
+from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import pytest
+from twitterapiv2.model.useroauthresponse import UserOAuthResponse
 from twitterapiv2.usertuiauth_client import UserTUIAuthClient
 
 MOCK_VALUES: Dict[str, Any] = {
@@ -61,6 +63,10 @@ MOCK_TOKENS = {
     "TW_ACCESS_SECRET": "LswwdoUaIvS8ltyTt5jkRh4J50vUPVVHtR2YPi5kE",
 }
 
+MOCK_RESPONSE = UserOAuthResponse("mocktoken", "mocksecret", "mock", "mock")
+USER_RESP = "oauth_token=UsPAbAAAAAABVjj_AAABfYO81xo&oauth_token_secret=mwr3uC5LWlgfYewBMNVTAi1VPlI1BmXL&oauth_callback_confirmed=true"  # noqa
+ACCESS_RESP = "oauth_token=1069768653757997056-8rVedS0KEQI9KvzLOtamAw0wZixSBB&oauth_token_secret=i3OCVHR0AGXjMrCcrBtedNi89vUm4YovBo67cE8Xaf4z8&user_id=1069768653757997&screen_name=preocts"  # noqa
+
 
 def test_key_collect() -> None:
     client = UserTUIAuthClient()
@@ -116,3 +122,69 @@ def test_generate_oauth_header() -> None:
     client = UserTUIAuthClient()
     header = client.generate_oauth_header(MOCK_HEADER_VALUES)
     assert header == MOCK_VALUES["expected_header"]
+
+
+def test_user_authentication_request_fails() -> None:
+    client = UserTUIAuthClient()
+    with patch.object(client, "request_user_permission") as user_perm:
+        user_perm.return_value = None
+        assert client.authenticate() is False
+        user_perm.reset_mock()
+
+
+def test_user_authentication_validation_fails() -> None:
+    client = UserTUIAuthClient()
+    with patch.object(client, "request_user_permission") as user_perm:
+        user_perm.return_value = MOCK_RESPONSE
+        with patch("builtins.input", lambda user_in: "PIN"):
+            with patch.object(client, "validate_authentication") as validate:
+                validate.return_value = None
+                assert client.authenticate() is False
+                assert user_perm.call_count == 1
+                assert validate.call_count == 1
+                validate.assert_called_with(MOCK_RESPONSE.oauth_token, "PIN")
+
+
+def test_user_authentication_success() -> None:
+    client = UserTUIAuthClient()
+    with patch.object(client, "request_user_permission") as user_perm:
+        user_perm.return_value = MOCK_RESPONSE
+        with patch("builtins.input", lambda user_in: "PIN"):
+            with patch.object(client, "validate_authentication") as validate:
+                validate.return_value = MOCK_RESPONSE
+                assert client.authenticate() is True
+                assert user_perm.call_count == 1
+                assert validate.call_count == 1
+                validate.assert_called_with(MOCK_RESPONSE.oauth_token, "PIN")
+
+
+def test_request_user_permission_success() -> None:
+    client = UserTUIAuthClient()
+    request = MagicMock(return_value=MagicMock(data=USER_RESP.encode()))
+    with patch.object(client.http.http, "request", request):
+        result = client.request_user_permission()
+        assert isinstance(result, UserOAuthResponse)
+
+
+def test_request_user_permission_failure() -> None:
+    client = UserTUIAuthClient()
+    request = MagicMock(return_value=MagicMock(data="errors".encode()))
+    with patch.object(client.http.http, "request", request):
+        result = client.request_user_permission()
+        assert result is None
+
+
+def test_validate_authentication_success() -> None:
+    client = UserTUIAuthClient()
+    request = MagicMock(return_value=MagicMock(data=USER_RESP.encode()))
+    with patch.object(client.http.http, "request_encode_url", request):
+        result = client.validate_authentication("mock", "mock")
+        assert isinstance(result, UserOAuthResponse)
+
+
+def test_validate_authentication_failure() -> None:
+    client = UserTUIAuthClient()
+    request = MagicMock(return_value=MagicMock(data="errors".encode()))
+    with patch.object(client.http.http, "request_encode_url", request):
+        result = client.validate_authentication("mock", "mock")
+        assert result is None
