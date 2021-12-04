@@ -27,6 +27,7 @@ from twitterapiv2.http import Http
 from twitterapiv2.model.useroauthresponse import UserOAuthResponse
 
 BASE_URL = "https://api.twitter.com"
+USER_AUTH_PROMPT = "Click on link, accept, and enter the resulting PIN to authenticate:"
 
 
 class UserTUIAuthClient:
@@ -197,7 +198,7 @@ class UserTUIAuthClient:
         user_resp = self.request_user_permission()
         if user_resp is None:
             return False
-        print("Go here next: ", end="")
+        print(USER_AUTH_PROMPT)
         print(
             "https://api.twitter.com/oauth/authorize"
             f"?oauth_token={user_resp.oauth_token}"
