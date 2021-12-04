@@ -97,6 +97,8 @@ class UserAuthClient:
 
     def request_token(self) -> None:
         """Leg 1 of 3"""
+        # TODO : finish work
+        raise NotImplementedError("WIP")
         header_values = self.generate_header_key_values()
         fields = {"oauth_callback": self.callback_http, **header_values}
         param = self.generate_parameter_string(fields)
