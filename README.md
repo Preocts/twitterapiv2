@@ -20,6 +20,7 @@ During a re-write of [this project](https://github.com/Preocts/twwordmap) I star
 - `tweets/counts/recent` endpoint
 - `tweets/lookup` endpoint
 - Interface for `/tweets/` endpoint clients
+- TUI User Authentication
 
 ### On Deck
 - Better documentation
@@ -31,10 +32,12 @@ During a re-write of [this project](https://github.com/Preocts/twwordmap) I star
 
 The authentication client of included in the `twitterapiv2/` library requires your applications consumer credentials to be loaded in the environment variables before an authentication attempt is made. The consumer credentials are your client key and client secret as found in the application dashboard of the Twitter Dev panel.
 
-Create two environmental variables as follows:
+Create four environmental variables as follows:
 ```env
 TW_CONSUMER_KEY=[client key]
 TW_CONSUMER_SECRET=[client secret]
+TW_ACCESS_KEY=[access key]
+TW_ACCESS_SECRET=[access secret]
 ```
 
 A 'TW_BEARER_TOKEN' will be created in the environment on successful authentication. This key should be stored securely and loaded to the environment on subsequent calls. When this token already exists, the request for a bearer token can be skipped.
@@ -114,7 +117,7 @@ $ cd twitterapiv2
 Create and activate `venv`:
 ```bash
 # Linux/MacOS
-python3 -m venv venv
+python -m venv venv
 . venv/bin/activate
 
 # Windows
