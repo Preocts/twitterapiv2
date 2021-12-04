@@ -34,14 +34,14 @@ class UserOAuthResponse(NamedTuple):
 
         if user_match is not None:
             return cls(
-                oauth_token=user_match.group(0),
-                oauth_token_secret=user_match.group(1),
+                oauth_token=user_match.group(1),
+                oauth_token_secret=user_match.group(2),
             )
         elif access_match is not None:
             return cls(
-                oauth_token=access_match.group(0),
-                oauth_token_secret=access_match.group(1),
-                user_id=access_match.group(2),
-                screen_name=access_match.group(3),
+                oauth_token=access_match.group(1),
+                oauth_token_secret=access_match.group(2),
+                user_id=access_match.group(3),
+                screen_name=access_match.group(4),
             )
         raise ValueError("No match for response string.")
