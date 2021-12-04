@@ -4,7 +4,7 @@ from typing import Dict
 from unittest.mock import patch
 
 import pytest
-from twitterapiv2.userauth_client import UserAuthClient
+from twitterapiv2.usertuiauth_client import UserTUIAuthClient
 
 MOCK_VALUES: Dict[str, Any] = {
     "method": "post",
@@ -33,15 +33,17 @@ MOCK_VALUES: Dict[str, Any] = {
         "%252C%2520a%2520signed%2520OAuth%2520request%2521"
     ),
     "expected_signature": "hCtSmYh+iHYCEqBWrE7C7hYmtUk=",
-    "expected_header": (
-        'OAuth oauth_consumer_key="xvz1evFS4wEEPTGEFPHBog", '
-        'oauth_nonce="kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg", '
-        'oauth_signature="tnnArxj06cWHq44gCs1OSKk%2FjLY%3D", '
-        'oauth_signature_method="HMAC-SHA1", '
-        'oauth_timestamp="1318622958", '
-        'oauth_token="370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb", '
-        'oauth_version="1.0"'
-    ),
+    "expected_header": {
+        "Authorization": (
+            'OAuth oauth_consumer_key="xvz1evFS4wEEPTGEFPHBog", '
+            'oauth_nonce="kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg", '
+            'oauth_signature="tnnArxj06cWHq44gCs1OSKk%2FjLY%3D", '
+            'oauth_signature_method="HMAC-SHA1", '
+            'oauth_timestamp="1318622958", '
+            'oauth_token="370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb", '
+            'oauth_version="1.0"'
+        )
+    },
 }
 MOCK_HEADER_VALUES = {
     "oauth_consumer_key": "xvz1evFS4wEEPTGEFPHBog",
@@ -61,32 +63,30 @@ MOCK_TOKENS = {
 
 
 def test_key_collect() -> None:
-    client = UserAuthClient()
-    assert client.generate_header_key_values()
+    client = UserTUIAuthClient()
+    assert client.generate_oauth_keys()
 
 
 def test_key_collect_raises() -> None:
-    client = UserAuthClient()
+    client = UserTUIAuthClient()
     with patch.dict(os.environ):
         del os.environ["TW_CONSUMER_KEY"]
         with pytest.raises(KeyError):
-            client.generate_header_key_values()
+            client.generate_oauth_keys()
 
 
 def test_generate_paramter_string() -> None:
-    client = UserAuthClient()
+    client = UserTUIAuthClient()
     with patch.dict(os.environ, MOCK_TOKENS):
-        keys = client.generate_header_key_values()
+        keys = client.generate_oauth_keys()
         keys["oauth_nonce"] = MOCK_VALUES["oauth_nonce"]
         keys["oauth_timestamp"] = MOCK_VALUES["oauth_timestamp"]
-        parameter_string = client.generate_parameter_string(
-            fields={**keys, **MOCK_VALUES["fields"]}
-        )
+        parameter_string = client.generate_parameter_string(keys, MOCK_VALUES["fields"])
     assert parameter_string == MOCK_VALUES["expected_parameter_string"]
 
 
 def test_generate_signature_base_string() -> None:
-    client = UserAuthClient()
+    client = UserTUIAuthClient()
     parameter_string = MOCK_VALUES["expected_parameter_string"]
     base_string = client.generate_base_string(
         method=MOCK_VALUES["method"],
@@ -97,7 +97,7 @@ def test_generate_signature_base_string() -> None:
 
 
 def test_generate_signature_string() -> None:
-    client = UserAuthClient()
+    client = UserTUIAuthClient()
     base_string = MOCK_VALUES["expected_base_string"]
     with patch.dict(os.environ, MOCK_TOKENS):
         signature = client.generate_signature_string(base_string)
@@ -105,7 +105,7 @@ def test_generate_signature_string() -> None:
 
 
 def test_generate_signature_string_raises() -> None:
-    client = UserAuthClient()
+    client = UserTUIAuthClient()
     with patch.dict(os.environ):
         del os.environ["TW_CONSUMER_SECRET"]
         with pytest.raises(KeyError):
@@ -113,6 +113,6 @@ def test_generate_signature_string_raises() -> None:
 
 
 def test_generate_oauth_header() -> None:
-    client = UserAuthClient()
+    client = UserTUIAuthClient()
     header = client.generate_oauth_header(MOCK_HEADER_VALUES)
     assert header == MOCK_VALUES["expected_header"]
