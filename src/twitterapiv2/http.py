@@ -38,7 +38,7 @@ class Http:
             ),
         )
 
-    def _data2dict(self, data: bytes) -> Dict[str, Any]:
+    def data2dict(self, data: bytes) -> Dict[str, Any]:
         """Converts response data to a dict"""
         try:
             return json.loads(data.decode("utf-8"))
@@ -55,8 +55,8 @@ class Http:
         """Override for specific implementations"""
         resp = self.http.request("GET", url, fields, headers)
         self.last_response = ResponseHeader.build_from(resp)
-        self._raise_on_response(resp, url)
-        return self._data2dict(resp.data)
+        self.raise_on_response(resp, url)
+        return self.data2dict(resp.data)
 
     def post(
         self,
@@ -67,8 +67,8 @@ class Http:
         """Override for specific implementations"""
         resp = self.http.request("POST", url, body=json.dumps(payload), headers=headers)
         self.last_response = ResponseHeader.build_from(resp)
-        self._raise_on_response(resp, url)
-        return self._data2dict(resp.data)
+        self.raise_on_response(resp, url)
+        return self.data2dict(resp.data)
 
     def put(self) -> None:
         """Override for specific implementations"""
@@ -82,7 +82,7 @@ class Http:
         """Override for specific implementations"""
         raise NotImplementedError  # pragma: no cover
 
-    def _raise_on_response(self, resp: Any, url: str) -> None:
+    def raise_on_response(self, resp: Any, url: str) -> None:
         """Custom handling of invalid status codes"""
         if resp.status == 429:
             rst = self.last_response.x_rate_limit_reset if self.last_response else None

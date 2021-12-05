@@ -26,28 +26,28 @@ def test_data2dict() -> None:
     client = Http()
     good_data = b'{"test": "value"}'
     bad_data = b"error data"
-    assert client._data2dict(good_data) == {"test": "value"}
-    assert client._data2dict(bad_data) == {"error": bad_data}
+    assert client.data2dict(good_data) == {"test": "value"}
+    assert client.data2dict(bad_data) == {"error": bad_data}
 
 
 def test_response_handling_429() -> None:
     mock_resp = MockReponse(429, b"")
     client = Http()
     with pytest.raises(ThrottledError):
-        client._raise_on_response(mock_resp, "")
+        client.raise_on_response(mock_resp, "")
 
 
 def test_response_handling_401() -> None:
     mock_resp = MockReponse(401, b"")
     client = Http()
     with pytest.raises(InvalidResponseError):
-        client._raise_on_response(mock_resp, "")
+        client.raise_on_response(mock_resp, "")
 
 
 def test_response_handing_200() -> None:
     mock_resp = MockReponse(200, b"")
     client = Http()
-    client._raise_on_response(mock_resp, "")
+    client.raise_on_response(mock_resp, "")
 
 
 @api_recorder.use_cassette()

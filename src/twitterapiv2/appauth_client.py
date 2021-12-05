@@ -13,7 +13,7 @@ from urllib import parse
 from twitterapiv2.http import Http
 
 
-class AppAuthClient(Http):
+class AppAuthClient:
     """
     Authentication requires the following environment variables exist:
         TW_CONSUMER_KEY
@@ -28,7 +28,7 @@ class AppAuthClient(Http):
     TWITTER_API = "https://api.twitter.com"
 
     def __init__(self) -> None:
-        super().__init__()
+        self.http = Http()
         self.log = logging.getLogger(__name__)
 
     def encoded_credentials(self) -> str:
@@ -92,10 +92,10 @@ class AppAuthClient(Http):
             "Authorization": "Basic " + self.encoded_credentials(),
         }
         # Override urllib3's preference to encode body on POST
-        resp = self.http.request_encode_url(
+        resp = self.http.http.request_encode_url(
             "POST",
             url=url,
             fields=fields,
             headers=headers,
         )
-        return self._data2dict(resp.data)
+        return self.http.data2dict(resp.data)
