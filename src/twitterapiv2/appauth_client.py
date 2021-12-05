@@ -11,6 +11,7 @@ from typing import Dict
 from urllib import parse
 
 from twitterapiv2.http import Http
+from twitterapiv2.model.httpresponse import HTTPResponse
 
 
 class AppAuthClient:
@@ -92,10 +93,12 @@ class AppAuthClient:
             "Authorization": "Basic " + self.encoded_credentials(),
         }
         # Override urllib3's preference to encode body on POST
-        resp = self.http.http.request_encode_url(
-            "POST",
-            url=url,
-            fields=fields,
-            headers=headers,
+        resp = HTTPResponse(
+            self.http.http.request_encode_url(
+                method="POST",
+                url=url,
+                fields=fields,
+                headers=headers,
+            )
         )
-        return self.http.data2dict(resp.data)
+        return resp.json if resp.has_success else {}
