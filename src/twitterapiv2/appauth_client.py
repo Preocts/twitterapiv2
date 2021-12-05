@@ -28,8 +28,8 @@ class AppAuthClient(Http):
     TWITTER_API = "https://api.twitter.com"
 
     def __init__(self) -> None:
+        super().__init__()
         self.log = logging.getLogger(__name__)
-        self.http = super().connection()
 
     def encoded_credentials(self) -> str:
         """Creates an encoded bear token credential string"""
@@ -72,7 +72,7 @@ class AppAuthClient(Http):
 
     def revoke_bearer_token(self) -> None:
         """Revoke and delete token in `TW_BEARER_TOKEN` environ variable"""
-        raise NotImplementedError("Twitter functionality is AWOL here. Use dashboard!")
+        raise NotImplementedError("Twitter functionality missing. Use the dashboard!")
         # token = os.getenv("TW_BEARER_TOKEN")
         # if not token:
         #     raise ValueError(f"No bearer token loaded: TW_BEARER_TOKEN={token}")

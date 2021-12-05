@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from typing import Any
 from typing import Dict
@@ -5,6 +6,8 @@ from typing import Optional
 
 from twitterapiv2.fields import Fields
 from twitterapiv2.http import Http
+
+_BEARER_TOKEN = "TW_BEARER_TOKEN"
 
 
 class ClientIntrfc:
@@ -43,9 +46,14 @@ class ClientIntrfc:
         """True if more pages exist. Always starts as False"""
         return bool(self._next_token)
 
+    @property
+    def headers(self) -> Dict[str, str]:
+        """Build headers with TW_BEARER_TOKEN from environ"""
+        return {"Authorization": "Bearer " + os.getenv(_BEARER_TOKEN, "")}
+
     def get(self, url: str) -> Dict[str, Any]:
         """Sends a GET request to url with defined fields encoded into URL"""
-        result = self.http.get(url, self.fields)
+        result = self.http.get(url, self.fields, self.headers)
         meta = result.get("meta")
         self._next_token = meta.get("next_token") if meta else None
         return result
