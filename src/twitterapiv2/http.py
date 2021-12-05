@@ -1,6 +1,5 @@
 import json
 import logging
-import os
 from typing import Any
 from typing import Dict
 from typing import Optional
@@ -9,8 +8,6 @@ import urllib3
 from twitterapiv2.exceptions import InvalidResponseError
 from twitterapiv2.exceptions import ThrottledError
 from twitterapiv2.model.responseheader import ResponseHeader
-
-_BEARER_TOKEN = "TW_BEARER_TOKEN"
 
 
 class Http:
@@ -41,10 +38,6 @@ class Http:
             ),
         )
 
-    def _headers(self) -> Dict[str, str]:
-        """Build headers with TW_BEARER_TOKEN from environ"""
-        return {"Authorization": "Bearer " + os.getenv(_BEARER_TOKEN, "")}
-
     def _data2dict(self, data: bytes) -> Dict[str, Any]:
         """Converts response data to a dict"""
         try:
@@ -56,10 +49,11 @@ class Http:
     def get(
         self,
         url: str,
-        fields: Dict[str, Any],
+        fields: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, str]] = None,
     ) -> Dict[str, Any]:
         """Override for specific implementations"""
-        resp = self.http.request("GET", url, fields, self._headers())
+        resp = self.http.request("GET", url, fields, headers)
         self.last_response = ResponseHeader.build_from(resp)
         self._raise_on_response(resp, url)
         return self._data2dict(resp.data)
