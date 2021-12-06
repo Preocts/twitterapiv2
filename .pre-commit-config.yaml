@@ -47,3 +47,4 @@ repos:
     rev: v0.910-1
     hooks:
       - id: mypy
+        exclude: "^tests/"
