@@ -78,6 +78,13 @@ def test_response_handling_401() -> None:
         client.raise_on_response("https://", mock_resp)
 
 
+def test_response_handling_invalid() -> None:
+    mock_resp = MockReponse(42, "")
+    client = ClientIntrfc()
+    with pytest.raises(InvalidResponseError):
+        client.raise_on_response("https://", mock_resp)
+
+
 def test_response_handing_200() -> None:
     mock_resp = MockReponse(200, "")
     client = ClientIntrfc()

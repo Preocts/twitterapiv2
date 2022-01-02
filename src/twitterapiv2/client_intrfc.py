@@ -70,5 +70,5 @@ class ClientIntrfc:
         if resp.status == 429:
             rst = resp.response_headers.x_rate_limit_reset
             raise ThrottledError(f"Throttled until '{rst}'")
-        if resp.status not in range(200, 300):
+        if not (200 <= resp.status < 300):
             raise InvalidResponseError(f"{resp.status}: {url} - '{resp.body}")
