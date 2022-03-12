@@ -6,7 +6,7 @@ import pytest
 from twitterapiv2.client_intrfc import ClientIntrfc
 from twitterapiv2.exceptions import InvalidResponseError
 from twitterapiv2.exceptions import ThrottledError
-from twitterapiv2.model.httpresponse import HTTPResponse
+from twitterapiv2.model.response import Response
 from twitterapiv2.model.responseheader import ResponseHeader
 
 
@@ -18,7 +18,7 @@ def test_default_values() -> None:
 
 def test_properties() -> None:
     client = ClientIntrfc()
-    mock_resp = HTTPResponse(None)
+    mock_resp = Response(None)
     mock_headers = ResponseHeader()
     mock_headers.x_rate_limit_remaining = "10"
     mock_headers.x_rate_limit_reset = "1637818406"

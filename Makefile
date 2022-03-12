@@ -7,10 +7,10 @@ dev-install:
 	pip install -r requirements-dev.txt
 	pip install --editable .
 	pre-commit install
-	pre-commit autoupdate
 
 .PHONY: update
-update: clean-artifacts clean-tests init dev-install
+update:
+	pre-commit autoupdate
 
 .PHONY: clean-artifacts
 clean-artifacts:

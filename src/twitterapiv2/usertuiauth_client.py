@@ -23,7 +23,7 @@ from typing import List
 from typing import Optional
 from urllib import parse
 
-from twitterapiv2.http import Http
+from twitterapiv2.http_client import HTTPClient
 from twitterapiv2.model.useroauthresponse import UserOAuthResponse
 
 BASE_URL = "https://api.twitter.com"
@@ -36,7 +36,7 @@ class UserTUIAuthClient:
     def __init__(self) -> None:
         """Creates and manages 3-legged user authentication via TUI"""
         self.log = logging.getLogger(__name__)
-        self.http = Http()
+        self.http = HTTPClient()
         self.callback_http = "oob"
         self._user_auth: Optional[UserOAuthResponse] = None
 

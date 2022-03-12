@@ -7,8 +7,8 @@ from typing import Optional
 from twitterapiv2.exceptions import InvalidResponseError
 from twitterapiv2.exceptions import ThrottledError
 from twitterapiv2.fields import Fields
-from twitterapiv2.http import Http
-from twitterapiv2.model.httpresponse import HTTPResponse
+from twitterapiv2.http_client import HTTPClient
+from twitterapiv2.model.response import Response
 
 
 _BEARER_TOKEN = "TW_BEARER_TOKEN"
@@ -17,8 +17,8 @@ _BEARER_TOKEN = "TW_BEARER_TOKEN"
 class ClientIntrfc:
     def __init__(self) -> None:
         self.field_builder = Fields()
-        self.http = Http()
-        self._last_response: Optional[HTTPResponse] = None
+        self.http = HTTPClient()
+        self._last_response: Optional[Response] = None
         self._next_token: Optional[str] = None
 
     @property
@@ -26,14 +26,14 @@ class ClientIntrfc:
         """Number of calls remaining before next limit reset"""
         if self._last_response is None:
             return -1
-        return int(self._last_response.response_headers.x_rate_limit_remaining)
+        return int(self._last_response.get_headers().x_rate_limit_remaining)
 
     @property
     def limit_reset(self) -> datetime:
         """Datetime of next limit reset as UTC unaware datetime"""
         if self._last_response is None:
             return datetime.now()
-        ts = int(self._last_response.response_headers.x_rate_limit_reset)
+        ts = int(self._last_response.get_headers().x_rate_limit_reset)
         return datetime.utcfromtimestamp(ts)
 
     @property
@@ -57,18 +57,21 @@ class ClientIntrfc:
         """Sends a GET request to url with defined fields encoded into URL"""
         self._last_response = self.http.get(url, self.fields, self.headers)
         self.raise_on_response(url, self._last_response)
-        meta = self._last_response.json.get("meta")
+        json_body = self._last_response.get_json() or {}
+        meta = json_body.get("meta")
         self._next_token = meta.get("next_token") if meta else None
-        return self._last_response.json
+        return json_body
 
     def fetch(self) -> Any:
         """Override with specific implementation"""
         raise NotImplementedError  # pragma: no cover
 
-    def raise_on_response(self, url: str, resp: HTTPResponse) -> None:
+    def raise_on_response(self, url: str, resp: Response) -> None:
         """Custom handling for Twitter status codes"""
-        if resp.status == 429:
-            rst = resp.response_headers.x_rate_limit_reset
+        if resp.get_status() == 429:
+            rst = resp.get_headers().x_rate_limit_reset
             raise ThrottledError(f"Throttled until '{rst}'")
-        if not (200 <= resp.status < 300):
-            raise InvalidResponseError(f"{resp.status}: {url} - '{resp.body}")
+        if not (200 <= resp.get_status() < 300):
+            raise InvalidResponseError(
+                f"{resp.get_status()}: {url} - '{resp.get_body()}"
+            )
