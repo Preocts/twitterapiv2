@@ -1,13 +1,13 @@
-# from datetime import datetime
+from datetime import datetime
 from unittest.mock import MagicMock
 
 import pytest
 from twitterapiv2.client_intrfc import ClientIntrfc
 from twitterapiv2.exceptions import InvalidResponseError
 from twitterapiv2.exceptions import ThrottledError
+from twitterapiv2.model.response import Response
 
-# from twitterapiv2.model.response import Response
-# from twitterapiv2.model.responseheader import ResponseHeader
+from tests.response_test import MOCK_RESPONSE
 
 
 def test_default_values() -> None:
@@ -16,20 +16,16 @@ def test_default_values() -> None:
     assert client.limit_reset is not None
 
 
-# def test_properties() -> None:
-#     client = ClientIntrfc()
-#     mock_resp = Response(MagicMock())
-#     mock_headers = ResponseHeader()
-#     mock_headers.x_rate_limit_remaining = "10"
-#     mock_headers.x_rate_limit_reset = "1637818406"
-#     mock_resp._response_headers = mock_headers
+def test_properties() -> None:
+    client = ClientIntrfc()
+    expected_remaining = MOCK_RESPONSE.headers["x-rate-limit-remaining"]
+    reset = MOCK_RESPONSE.headers["x-rate-limit-reset"]
+    expected_reset = datetime.utcfromtimestamp(int(reset))
+    mock_resp = Response(MOCK_RESPONSE)
+    client._last_response = mock_resp
 
-#     reset = datetime.utcfromtimestamp(1637818406)
-
-#     client._last_response = mock_resp
-
-#     assert client.limit_remaining == 10
-#     assert client.limit_reset == reset
+    assert client.limit_remaining == int(expected_remaining)
+    assert client.limit_reset == expected_reset
 
 
 def test_more() -> None:
