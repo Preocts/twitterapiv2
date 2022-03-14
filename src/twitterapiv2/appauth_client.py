@@ -10,8 +10,8 @@ from typing import Any
 from typing import Dict
 from urllib import parse
 
-from twitterapiv2.http import Http
-from twitterapiv2.model.httpresponse import HTTPResponse
+from twitterapiv2.http_client import HTTPClient
+from twitterapiv2.model.response import Response
 
 
 class AppAuthClient:
@@ -29,7 +29,7 @@ class AppAuthClient:
     TWITTER_API = "https://api.twitter.com"
 
     def __init__(self) -> None:
-        self.http = Http()
+        self.http = HTTPClient()
         self.log = logging.getLogger(__name__)
 
     def encoded_credentials(self) -> str:
@@ -93,7 +93,7 @@ class AppAuthClient:
             "Authorization": "Basic " + self.encoded_credentials(),
         }
         # Override urllib3's preference to encode body on POST
-        resp = HTTPResponse(
+        resp = Response(
             self.http.http.request_encode_url(
                 method="POST",
                 url=url,
@@ -101,4 +101,4 @@ class AppAuthClient:
                 headers=headers,
             )
         )
-        return resp.json if resp.has_success else {}
+        return resp.get_json() or {} if resp.has_success() else {}
