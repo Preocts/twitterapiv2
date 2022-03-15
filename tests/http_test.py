@@ -1,9 +1,8 @@
+from __future__ import annotations
+
 import json
 from typing import Any
-from typing import Dict
 from typing import Generator
-from typing import Optional
-from typing import Tuple
 from unittest.mock import MagicMock
 from unittest.mock import patch
 from urllib import parse
@@ -51,7 +50,7 @@ def patch_client() -> Generator[HTTPClient, None, None]:
 def send_fixtures(
     patch_client: HTTPClient,
     request: Any,
-) -> Generator[Tuple[HTTPClient, str], None, None]:
+) -> Generator[tuple[HTTPClient, str], None, None]:
     """Methods that send data to an API: POST, PATCH, PUT"""
     yield patch_client, request.param
 
@@ -60,7 +59,7 @@ def send_fixtures(
 def fetch_fixtures(
     patch_client: HTTPClient,
     request: Any,
-) -> Generator[Tuple[HTTPClient, str], None, None]:
+) -> Generator[tuple[HTTPClient, str], None, None]:
     """Methods that fetch data from an API: GET, DELETE"""
     yield patch_client, request.param
 
@@ -98,9 +97,9 @@ def test_default_constants(base_client: HTTPClient) -> None:
 )
 def test_fetch_methods(
     url: str,
-    fields: Optional[Dict[str, Any]],
-    headers: Optional[Dict[str, str]],
-    fetch_fixtures: Tuple[HTTPClient, str],
+    fields: dict[str, Any] | None,
+    headers: dict[str, str] | None,
+    fetch_fixtures: tuple[HTTPClient, str],
 ) -> None:
     patch_client, send_method = fetch_fixtures
     result = getattr(patch_client, send_method)(url, fields, headers)
@@ -131,10 +130,10 @@ def test_fetch_methods(
 )
 def test_send_methods(
     url: str,
-    body: Optional[Dict[str, Any]],
-    headers: Optional[Dict[str, str]],
+    body: dict[str, Any] | None,
+    headers: dict[str, str] | None,
     urlencode: bool,
-    send_fixtures: Tuple[HTTPClient, str],
+    send_fixtures: tuple[HTTPClient, str],
 ) -> None:
     patch_client, send_method = send_fixtures
     result = getattr(patch_client, send_method)(url, body, headers, urlencode)

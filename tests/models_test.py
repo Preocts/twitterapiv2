@@ -23,7 +23,7 @@ from twitterapiv2.model.tweet_count.tweet_count import TweetCount
     ),
 )
 def test_model_load_and_serialize(model: BaseModel, fixture_file: str) -> None:
-    fixture = json.load(open(fixture_file, "r"))
+    fixture = json.load(open(fixture_file))
     built_model = model.build_from(fixture)
     assert isinstance(built_model, BaseModel)
 

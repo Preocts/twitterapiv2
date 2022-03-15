@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import os
 from typing import Any
-from typing import Dict
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
@@ -8,7 +9,7 @@ import pytest
 from twitterapiv2.model.useroauthresponse import UserOAuthResponse
 from twitterapiv2.usertuiauth_client import UserTUIAuthClient
 
-MOCK_VALUES: Dict[str, Any] = {
+MOCK_VALUES: dict[str, Any] = {
     "method": "post",
     "route": "/1.1/statuses/update.json",
     "fields": {
@@ -168,7 +169,7 @@ def test_request_user_permission_success() -> None:
 
 def test_request_user_permission_failure() -> None:
     client = UserTUIAuthClient()
-    request = MagicMock(return_value=MagicMock(data="errors".encode()))
+    request = MagicMock(return_value=MagicMock(data=b"errors"))
     with patch.object(client.http.http, "request", request):
         result = client.request_user_permission()
         assert result is None
@@ -184,7 +185,7 @@ def test_validate_authentication_success() -> None:
 
 def test_validate_authentication_failure() -> None:
     client = UserTUIAuthClient()
-    request = MagicMock(return_value=MagicMock(data="errors".encode()))
+    request = MagicMock(return_value=MagicMock(data=b"errors"))
     with patch.object(client.http.http, "request_encode_url", request):
         result = client.validate_authentication("mock", "mock")
         assert result is None
