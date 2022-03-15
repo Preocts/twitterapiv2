@@ -1,17 +1,17 @@
+from __future__ import annotations
+
 from typing import Any
-from typing import Dict
-from typing import Optional
 
 from twitterapiv2.model.base_model import BaseModel
 from twitterapiv2.model.recent.coordinates import Coordinates
 
 
 class Geo(BaseModel):
-    coordinates: Optional[Coordinates]
+    coordinates: Coordinates | None
     place_id: str
 
     @classmethod
-    def build_from(cls, data: Dict[str, Any]) -> "Geo":
+    def build_from(cls, data: dict[str, Any]) -> Geo:
         """Build object"""
         new = cls()
         coord = data.get("coordinates")

@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from typing import Any
-from typing import Dict
 
 from twitterapiv2.model.base_model import BaseModel
 
@@ -13,7 +14,7 @@ class Urls(BaseModel):
     unwound_url: str
 
     @classmethod
-    def build_from(cls, data: Dict[str, Any]) -> "Urls":
+    def build_from(cls, data: dict[str, Any]) -> Urls:
         """Build object"""
         new = cls()
         new.start = data.get("start", 0)

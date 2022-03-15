@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from typing import Any
-from typing import Dict
 
 from twitterapiv2.model.base_model import BaseModel
 
@@ -10,7 +11,7 @@ class NonPublicMetrics(BaseModel):
     user_profile_click: int
 
     @classmethod
-    def build_from(cls, data: Dict[str, Any]) -> "NonPublicMetrics":
+    def build_from(cls, data: dict[str, Any]) -> NonPublicMetrics:
         """Build object"""
         new = cls()
         new.impression_count = data.get("impression_count", 0)

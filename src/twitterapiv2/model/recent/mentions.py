@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from typing import Any
-from typing import Dict
 
 from twitterapiv2.model.base_model import BaseModel
 
@@ -10,7 +11,7 @@ class Mentions(BaseModel):
     username: str
 
     @classmethod
-    def build_from(cls, data: Dict[str, Any]) -> "Mentions":
+    def build_from(cls, data: dict[str, Any]) -> Mentions:
         """Build object"""
         new = cls()
         new.start = data.get("start", 0)

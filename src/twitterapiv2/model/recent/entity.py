@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from typing import Any
-from typing import Dict
 
 from twitterapiv2.model.base_model import BaseModel
 
@@ -10,7 +11,7 @@ class Entity(BaseModel):
     description: str
 
     @classmethod
-    def build_from(cls, data: Dict[str, Any]) -> "Entity":
+    def build_from(cls, data: dict[str, Any]) -> Entity:
         """Build object"""
         new = cls()
         new.id = data.get("id", "")

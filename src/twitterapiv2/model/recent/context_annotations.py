@@ -1,6 +1,6 @@
+from __future__ import annotations
+
 from typing import Any
-from typing import Dict
-from typing import Optional
 
 from twitterapiv2.model.base_model import BaseModel
 from twitterapiv2.model.recent.domain import Domain
@@ -8,11 +8,11 @@ from twitterapiv2.model.recent.entity import Entity
 
 
 class ContextAnnotations(BaseModel):
-    domain: Optional[Domain]
-    entity: Optional[Entity]
+    domain: Domain | None
+    entity: Entity | None
 
     @classmethod
-    def build_from(cls, data: Dict[str, Any]) -> "ContextAnnotations":
+    def build_from(cls, data: dict[str, Any]) -> ContextAnnotations:
         """Build object"""
         new = cls()
         domain = data.get("domain")

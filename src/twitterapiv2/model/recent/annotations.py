@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from typing import Any
-from typing import Dict
 
 from twitterapiv2.model.base_model import BaseModel
 
@@ -12,7 +13,7 @@ class Annotations(BaseModel):
     normalized_text: str
 
     @classmethod
-    def build_from(cls, data: Dict[str, Any]) -> "Annotations":
+    def build_from(cls, data: dict[str, Any]) -> Annotations:
         """Build object"""
         new = cls()
         new.start = data.get("start", 0)
