@@ -1,19 +1,19 @@
+from __future__ import annotations
+
 from typing import Any
-from typing import Dict
-from typing import List
 
 from twitterapiv2.model.base_model import BaseModel
 
 
 class Includes(BaseModel):
-    tweets: List[Any]
-    users: List[Any]
-    places: List[Any]
-    media: List[Any]
+    tweets: list[Any]
+    users: list[Any]
+    places: list[Any]
+    media: list[Any]
     polls: str
 
     @classmethod
-    def build_from(cls, data: Dict[str, Any]) -> "Includes":
+    def build_from(cls, data: dict[str, Any]) -> Includes:
         """Build object"""
         new = cls()
         new.tweets = data.get("tweets", [])

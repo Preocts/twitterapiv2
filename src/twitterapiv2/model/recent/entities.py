@@ -1,6 +1,6 @@
+from __future__ import annotations
+
 from typing import Any
-from typing import Dict
-from typing import List
 
 from twitterapiv2.model.base_model import BaseModel
 from twitterapiv2.model.recent.annotations import Annotations
@@ -11,14 +11,14 @@ from twitterapiv2.model.recent.urls import Urls
 
 
 class Entities(BaseModel):
-    annotations: List[Annotations]
-    urls: List[Urls]
-    hashtags: List[Hashtags]
-    mentions: List[Mentions]
-    cashtags: List[Cashtags]
+    annotations: list[Annotations]
+    urls: list[Urls]
+    hashtags: list[Hashtags]
+    mentions: list[Mentions]
+    cashtags: list[Cashtags]
 
     @classmethod
-    def build_from(cls, data: Dict[str, Any]) -> "Entities":
+    def build_from(cls, data: dict[str, Any]) -> Entities:
         """Build object"""
         new = cls()
         new.annotations = [

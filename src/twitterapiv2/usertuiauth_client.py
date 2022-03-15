@@ -11,6 +11,8 @@ https://developer.twitter.com/en/docs/authentication/oauth-1-0a/authorizing-a-re
 https://developer.twitter.com/en/docs/authentication/oauth-1-0a/obtaining-user-access-tokens
 https://developer.twitter.com/en/docs/authentication/api-reference/request_token
 """
+from __future__ import annotations
+
 import base64
 import hmac
 import logging
@@ -18,9 +20,6 @@ import os
 from datetime import datetime
 from hashlib import sha1
 from secrets import token_urlsafe
-from typing import Dict
-from typing import List
-from typing import Optional
 from urllib import parse
 
 from twitterapiv2.http_client import HTTPClient
@@ -38,9 +37,9 @@ class UserTUIAuthClient:
         self.log = logging.getLogger(__name__)
         self.http = HTTPClient()
         self.callback_http = "oob"
-        self._user_auth: Optional[UserOAuthResponse] = None
+        self._user_auth: UserOAuthResponse | None = None
 
-    def generate_oauth_header(self, header_values: Dict[str, str]) -> Dict[str, str]:
+    def generate_oauth_header(self, header_values: dict[str, str]) -> dict[str, str]:
         """
         Generated OAuth header string
 
@@ -53,14 +52,14 @@ class UserTUIAuthClient:
         Raises
             None
         """
-        segments: List[str] = []
+        segments: list[str] = []
         for key, value in header_values.items():
             qkey = parse.quote(key, safe="")
             qvalue = parse.quote(value, safe="")
             segments.append(f'{qkey}="{qvalue}"')
         return {"Authorization": "OAuth " + ", ".join(segments)}
 
-    def generate_oauth_keys(self) -> Dict[str, str]:
+    def generate_oauth_keys(self) -> dict[str, str]:
         """
         Collect all key:values needed for headers excluding `oauth_signature`
 
@@ -93,8 +92,8 @@ class UserTUIAuthClient:
 
     def generate_parameter_string(
         self,
-        oauth_keys: Dict[str, str],
-        fields: Optional[Dict[str, str]] = None,
+        oauth_keys: dict[str, str],
+        fields: dict[str, str] | None = None,
     ) -> str:
         """
         Generate OAuth1 parameter string
@@ -111,7 +110,7 @@ class UserTUIAuthClient:
         """
         fields = fields if fields is not None else {}
         joined_fields = {**fields, **oauth_keys}
-        parameter_segments: List[str] = []
+        parameter_segments: list[str] = []
         for field in sorted(joined_fields):
             key = parse.quote(field, safe="")
             value = parse.quote(joined_fields[field], safe="")
@@ -210,7 +209,7 @@ class UserTUIAuthClient:
 
         return bool(self._user_auth)
 
-    def request_user_permission(self) -> Optional[UserOAuthResponse]:
+    def request_user_permission(self) -> UserOAuthResponse | None:
         """
         Request user permission to access their account
 
@@ -246,7 +245,7 @@ class UserTUIAuthClient:
         self,
         oauth_token: str,
         verifier: str,
-    ) -> Optional[UserOAuthResponse]:
+    ) -> UserOAuthResponse | None:
         """
         Converts user response token and PIN to useable access tokens
 

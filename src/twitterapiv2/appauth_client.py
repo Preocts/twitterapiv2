@@ -3,11 +3,12 @@ Application auth client for obtaining and managing OAuth bearer token for v2 API
 
 https://developer.twitter.com/en/docs/authentication/oauth-2-0/application-only
 """
+from __future__ import annotations
+
 import logging
 import os
 from base64 import b64encode
 from typing import Any
-from typing import Dict
 from urllib import parse
 
 from twitterapiv2.http_client import HTTPClient
@@ -86,7 +87,7 @@ class AppAuthClient:
         #     self.log.error("Unexpected response: '%s'", result)
         #     raise ValueError("Unexpected response! Token may still be active.")
 
-    def _post_request(self, url: str, fields: Dict[str, str]) -> Dict[str, Any]:
+    def _post_request(self, url: str, fields: dict[str, str]) -> dict[str, Any]:
         """Internal use: makes validate and invalidate calls, returns result"""
         headers = {
             "Content-Type": "applicaton/x-www-form-urlencoded;charset=UTF-8",

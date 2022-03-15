@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Literal
 
 from twitterapiv2.client_intrfc import ClientIntrfc

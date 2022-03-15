@@ -1,7 +1,6 @@
+from __future__ import annotations
+
 from typing import Any
-from typing import Dict
-from typing import List
-from typing import Optional
 
 from twitterapiv2.model.base_model import BaseModel
 from twitterapiv2.model.recent.attachments import Attachments
@@ -22,28 +21,28 @@ class Data(BaseModel):
 
     id: str
     text: str
-    created_at: Optional[str]
-    author_id: Optional[str]
-    conversation_id: Optional[str]
-    in_reply_to_user_id: Optional[str]
-    referenced_tweets: List[ReferencedTweets]
-    attachments: Optional[Attachments]
-    geo: Optional[Geo]
-    context_annotations: Optional[ContextAnnotations]
-    entities: Optional[Entities]
-    withheld: Optional[Withheld]
-    public_metrics: Optional[PublicMetrics]
-    non_public_metrics: Optional[NonPublicMetrics]
-    organic_metrics: Optional[OrganicMetrics]
-    promoted_metrics: Optional[PromotedMetrics]
-    possibly_sensitive: Optional[bool]
-    lang: Optional[str]
-    reply_settings: Optional[str]
-    source: Optional[str]
-    includes: Optional[Includes]
+    created_at: str | None
+    author_id: str | None
+    conversation_id: str | None
+    in_reply_to_user_id: str | None
+    referenced_tweets: list[ReferencedTweets]
+    attachments: Attachments | None
+    geo: Geo | None
+    context_annotations: ContextAnnotations | None
+    entities: Entities | None
+    withheld: Withheld | None
+    public_metrics: PublicMetrics | None
+    non_public_metrics: NonPublicMetrics | None
+    organic_metrics: OrganicMetrics | None
+    promoted_metrics: PromotedMetrics | None
+    possibly_sensitive: bool | None
+    lang: str | None
+    reply_settings: str | None
+    source: str | None
+    includes: Includes | None
 
     @classmethod
-    def build_from(cls, data: Dict[str, Any]) -> "Data":
+    def build_from(cls, data: dict[str, Any]) -> Data:
         """Builds object from dictionary"""
         tweet = cls()
         tweet.id = data["id"]
@@ -58,14 +57,14 @@ class Data(BaseModel):
         tweet.source = data.get("source")
 
         # Process nested arrays
-        nested_array: Dict[str, Any] = {
+        nested_array: dict[str, Any] = {
             "referenced_tweets": ReferencedTweets,
         }
         for key, model in nested_array.items():
             setattr(tweet, key, [model.build_from(x) for x in data.get(key, [])])
 
         # Process Nested Objects
-        nested_obj: Dict[str, Any] = {
+        nested_obj: dict[str, Any] = {
             "attachments": Attachments,
             "geo": Geo,
             "context_annotations": ContextAnnotations,

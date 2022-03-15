@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from typing import Any
-from typing import Dict
 
 from twitterapiv2.model.base_model import BaseModel
 
@@ -11,7 +12,7 @@ class PublicMetrics(BaseModel):
     quote_count: int
 
     @classmethod
-    def build_from(cls, data: Dict[str, Any]) -> "PublicMetrics":
+    def build_from(cls, data: dict[str, Any]) -> PublicMetrics:
         """Build object"""
         new = cls()
         new.retweet_count = data.get("retweet_count", 0)

@@ -1,17 +1,17 @@
+from __future__ import annotations
+
 from typing import Any
-from typing import Dict
-from typing import List
 
 from twitterapiv2.model.base_model import BaseModel
 
 
 class Withheld(BaseModel):
     copyright: bool
-    country_code: List[Any]
+    country_code: list[Any]
     scope: int
 
     @classmethod
-    def build_from(cls, data: Dict[str, Any]) -> "Withheld":
+    def build_from(cls, data: dict[str, Any]) -> Withheld:
         """Build object"""
         new = cls()
         new.copyright = data.get("copyright", False)

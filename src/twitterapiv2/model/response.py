@@ -1,7 +1,7 @@
+from __future__ import annotations
+
 import json
 from typing import Any
-from typing import Dict
-from typing import Optional
 
 from twitterapiv2.model.responseheader import ResponseHeader
 from urllib3.response import HTTPResponse as HTTPResponse
@@ -23,7 +23,7 @@ class Response:
         """response headers"""
         return ResponseHeader.build_from(self.http_response)
 
-    def get_body(self) -> Optional[str]:
+    def get_body(self) -> str | None:
         """utf-8 decoded response body"""
         return self._body.decode("utf-8") if self._body is not None else None
 
@@ -31,7 +31,7 @@ class Response:
         """status code of response"""
         return self.http_response.status
 
-    def get_json(self) -> Optional[Dict[str, Any]]:
+    def get_json(self) -> dict[str, Any] | None:
         """json body as a dict if response body is valid json, else None"""
         try:
             return json.loads(self.get_body() or "")

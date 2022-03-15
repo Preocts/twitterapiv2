@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import re
 from typing import NamedTuple
 
@@ -16,7 +18,7 @@ class UserOAuthResponse(NamedTuple):
     screen_name: str = ""
 
     @classmethod
-    def from_resp_string(cls, response: str) -> "UserOAuthResponse":
+    def from_resp_string(cls, response: str) -> UserOAuthResponse:
         """
         Creates object from Twitter response string
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any
 
 from twitterapiv2.model.base_model import BaseModel
@@ -26,7 +28,7 @@ class ResponseHeader(BaseModel):
     x_connection_hash: str
 
     @classmethod
-    def build_from(cls, data: Any) -> "ResponseHeader":
+    def build_from(cls, data: Any) -> ResponseHeader:
         """Provide urllib3 HTTPResponse object"""
         new = cls()
         new.date = data.getheader("date", "")

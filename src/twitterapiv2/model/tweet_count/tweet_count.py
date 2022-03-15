@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from typing import Any
-from typing import Dict
 
 from twitterapiv2.model.base_model import BaseModel
 from twitterapiv2.model.tweet_count.meta import Meta
@@ -12,7 +13,7 @@ class TweetCount(BaseModel):
     meta: Meta
 
     @classmethod
-    def build_from(cls, data: Dict[str, Any]) -> "TweetCount":
+    def build_from(cls, data: dict[str, Any]) -> TweetCount:
         new = cls()
         new.start = data.get("start", 0)
         new.end = data.get("end", 0)

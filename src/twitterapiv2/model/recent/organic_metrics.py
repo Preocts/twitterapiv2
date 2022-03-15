@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from typing import Any
-from typing import Dict
 
 from twitterapiv2.model.base_model import BaseModel
 
@@ -13,7 +14,7 @@ class OrganicMetrics(BaseModel):
     like_count: int
 
     @classmethod
-    def build_from(cls, data: Dict[str, Any]) -> "OrganicMetrics":
+    def build_from(cls, data: dict[str, Any]) -> OrganicMetrics:
         """Build object"""
         new = cls()
         new.impression_count = data.get("impression_count", 0)
