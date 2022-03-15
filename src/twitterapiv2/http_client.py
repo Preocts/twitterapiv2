@@ -1,8 +1,8 @@
+from __future__ import annotations
+
 import json
 import logging
 from typing import Any
-from typing import Dict
-from typing import Optional
 from urllib import parse
 
 import urllib3
@@ -22,7 +22,7 @@ class HTTPClient:
     def __init__(
         self,
         *,
-        headers: Optional[Dict[str, str]] = None,
+        headers: dict[str, str] | None = None,
         max_pool: int = 10,
     ) -> None:
         self.log = logging.getLogger(__name__)
@@ -46,8 +46,8 @@ class HTTPClient:
     def get(
         self,
         url: str,
-        fields: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, str]] = None,
+        fields: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
     ) -> Response:
         """
         GET method with Response model returned
@@ -65,8 +65,8 @@ class HTTPClient:
     def delete(
         self,
         url: str,
-        fields: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, str]] = None,
+        fields: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
     ) -> Response:
         """
         DELETE method with Response model returned
@@ -84,8 +84,8 @@ class HTTPClient:
     def post(
         self,
         url: str,
-        body: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, str]] = None,
+        body: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
         urlencode: bool = False,
     ) -> Response:
         """
@@ -105,8 +105,8 @@ class HTTPClient:
     def put(
         self,
         url: str,
-        body: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, str]] = None,
+        body: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
         urlencode: bool = False,
     ) -> Response:
         """
@@ -126,8 +126,8 @@ class HTTPClient:
     def patch(
         self,
         url: str,
-        body: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, str]] = None,
+        body: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
         urlencode: bool = False,
     ) -> Response:
         """
@@ -148,8 +148,8 @@ class HTTPClient:
         self,
         method: str,
         url: str,
-        body: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, str]] = None,
+        body: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
         urlencode: bool = False,
     ) -> Response:
         """Internal: Handles POST, PUT, and PATCH"""
@@ -174,8 +174,8 @@ class HTTPClient:
         self,
         method: str,
         url: str,
-        fields: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, str]] = None,
+        fields: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
     ) -> Response:
         """Internal: Handles GET and DELETE"""
         headers = headers if headers is not None else self.headers

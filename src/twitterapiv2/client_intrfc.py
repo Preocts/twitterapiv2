@@ -1,8 +1,8 @@
+from __future__ import annotations
+
 import os
 from datetime import datetime
 from typing import Any
-from typing import Dict
-from typing import Optional
 
 from twitterapiv2.exceptions import InvalidResponseError
 from twitterapiv2.exceptions import ThrottledError
@@ -18,8 +18,8 @@ class ClientIntrfc:
     def __init__(self) -> None:
         self.field_builder = Fields()
         self.http = HTTPClient()
-        self._last_response: Optional[Response] = None
-        self._next_token: Optional[str] = None
+        self._last_response: Response | None = None
+        self._next_token: str | None = None
 
     @property
     def limit_remaining(self) -> int:
@@ -37,7 +37,7 @@ class ClientIntrfc:
         return datetime.utcfromtimestamp(ts)
 
     @property
-    def fields(self) -> Dict[str, Any]:
+    def fields(self) -> dict[str, Any]:
         """Returns fields that have been defined (removed NoneTypes)"""
         fields = self.field_builder.fields
         fields["next_token"] = self._next_token
@@ -49,11 +49,11 @@ class ClientIntrfc:
         return bool(self._next_token)
 
     @property
-    def headers(self) -> Dict[str, str]:
+    def headers(self) -> dict[str, str]:
         """Build headers with TW_BEARER_TOKEN from environ"""
         return {"Authorization": "Bearer " + os.getenv(_BEARER_TOKEN, "")}
 
-    def get(self, url: str) -> Dict[str, Any]:
+    def get(self, url: str) -> dict[str, Any]:
         """Sends a GET request to url with defined fields encoded into URL"""
         self._last_response = self.http.get(url, self.fields, self.headers)
         self.raise_on_response(url, self._last_response)

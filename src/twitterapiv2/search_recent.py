@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from twitterapiv2.client_intrfc import ClientIntrfc
 from twitterapiv2.model.recent.recent import Recent
 

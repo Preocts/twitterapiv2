@@ -1,4 +1,4 @@
-from typing import List
+from __future__ import annotations
 
 from twitterapiv2.client_intrfc import ClientIntrfc
 from twitterapiv2.model.recent.data import Data
@@ -26,7 +26,7 @@ class TweetsLookup(ClientIntrfc):
         self.user_fields = self.field_builder.user_fields
         self.ids = self.field_builder.ids
 
-    def fetch(self) -> List[Data]:
+    def fetch(self) -> list[Data]:
         """
         Return information about Tweet(s) specified by requested ID(s).
 
