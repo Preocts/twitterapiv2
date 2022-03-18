@@ -2,19 +2,12 @@ import os
 from unittest.mock import patch
 
 import pytest
-import vcr
 from twitterapiv2.appauth_client import AppAuthClient
 
 
 MOCK_KEY = "xvz1evFS4wEEPTGEFPHBog"
 MOCK_SECRET = "L8qq9PZyRg6ieKGEKhZolGC0vJWLw8iEJ88DRdyOg"
 MOCK_CRED = "eHZ6MWV2RlM0d0VFUFRHRUZQSEJvZzpMOHFxOVBaeVJnNmllS0dFS2hab2xHQzB2SldMdzhpRUo4OERSZHlPZw=="  # noqa
-
-api_recorder = vcr.VCR(
-    filter_headers=["Authorization"],
-    record_mode="ONCE",
-    cassette_library_dir="tests/cassettes/appauth_client",
-)
 
 
 def test_encoded_credentials() -> None:
@@ -40,7 +33,6 @@ def test_require_environ_vars() -> None:
         client.encoded_credentials()
 
 
-@api_recorder.use_cassette()
 def test_set_bearer_token() -> None:
     # NOTE: To re-record this test you need to inject valid creds to conftest
     assert os.getenv("TW_BEARER_TOKEN") is None
@@ -53,7 +45,6 @@ def test_set_bearer_token() -> None:
     assert os.environ["TW_BEARER_TOKEN"] == token
 
 
-# @api_recorder.use_cassette()
 def test_revoke_bearer_token() -> None:
     # NOTE: To re-record this test you need to inject valid creds to conftest
 
@@ -68,14 +59,12 @@ def test_revoke_bearer_token() -> None:
     # assert os.getenv("TW_BEARER_TOKEN") is None
 
 
-@api_recorder.use_cassette()
 def test_invalid_bearer_request() -> None:
     client = AppAuthClient()
     with pytest.raises(ValueError):
         client.set_bearer_token()
 
 
-@api_recorder.use_cassette()
 def test_invalid_bearer_response() -> None:
     # NOTE: Uses edited valid recording missing access_token
     client = AppAuthClient()
