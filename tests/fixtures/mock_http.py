@@ -3,7 +3,9 @@ from __future__ import annotations
 import json
 from typing import Any
 
+from twitterapiv2.model.response import Response
 from urllib3.response import HTTPResponse
+
 
 HEADERS = {
     "api-version": "2.30",
@@ -34,40 +36,50 @@ class MockHTTP:
     def __init__(self) -> None:
         self._urls: list[str] = []
         self._responses: list[dict[str, Any] | str] = []
-        self._status: list[int]
+        self._statuses: list[int] = []
+        self.called = 0
 
     def add(self, url: str, response: dict[str, Any] | str, status: int) -> None:
         """Add response to mock. They will be replayed in order of creation"""
         self._urls.append(url)
         self._responses.append(response)
-        self._status.append(status)
+        self._statuses.append(status)
 
-    def _check_call(self, **kwargs: Any) -> HTTPResponse | None:
+    def _check_call(self, *args: Any, **kwargs: Any) -> Response | None:
         """Check that url is expected, return response or None"""
-        resp = HTTPResponse(
-            body=json.dumps(self._responses.pop(0)).encode(),
-            headers=HEADERS,
-            status=self._status.pop(0),
+        self.called += 1
+        resp = Response(
+            HTTPResponse(
+                body=json.dumps(self._responses.pop(0)).encode(),
+                headers=HEADERS,
+                status=self._statuses.pop(0),
+            )
         )
         url = self._urls.pop(0)
-        return resp if kwargs.get("url", "") == url else None
+        if url in kwargs:
+            return resp if kwargs["url"] == url else None
 
-    def get(self, **kwargs: Any) -> None:
-        """Mocks http_client method"""
-        self._check_call(**kwargs)
+        if any(str(arg) == url for arg in args):
+            return resp
 
-    def put(self, **kwargs: Any) -> None:
-        """Mocks http_client method"""
-        self._check_call(**kwargs)
+        raise ValueError("URL does not match expected.")
 
-    def post(self, **kwargs: Any) -> None:
+    def get(self, *args: Any, **kwargs: Any) -> Response:
         """Mocks http_client method"""
-        self._check_call(**kwargs)
+        return self._check_call(*args, **kwargs)
 
-    def patch(self, **kwargs: Any) -> None:
+    def put(self, *args: Any, **kwargs: Any) -> Response:
         """Mocks http_client method"""
-        self._check_call(**kwargs)
+        return self._check_call(*args, **kwargs)
 
-    def delete(self, **kwargs: Any) -> None:
+    def post(self, *args: Any, **kwargs: Any) -> Response:
         """Mocks http_client method"""
-        self._check_call(**kwargs)
+        return self._check_call(*args, **kwargs)
+
+    def patch(self, *args: Any, **kwargs: Any) -> Response:
+        """Mocks http_client method"""
+        return self._check_call(*args, **kwargs)
+
+    def delete(self, *args: Any, **kwargs: Any) -> Response:
+        """Mocks http_client method"""
+        return self._check_call(*args, **kwargs)
