@@ -12,7 +12,6 @@ from typing import Any
 from urllib import parse
 
 from twitterapiv2.http_client import HTTPClient
-from twitterapiv2.model.response import Response
 
 
 class AppAuthClient:
@@ -27,7 +26,7 @@ class AppAuthClient:
     request for a bearer token can be skipped.
     """
 
-    TWITTER_API = "https://api.twitter.com"
+    twitter_api = "https://api.twitter.com"
 
     def __init__(self) -> None:
         self.http = HTTPClient()
@@ -52,12 +51,12 @@ class AppAuthClient:
         self.log.debug("Bearer token loaded to 'TW_BEARER_TOKEN'")
 
     def fetch_bearer_token(self) -> str:
-        """Set the `TW_BEARER_TOKEN` environment variable"""
+        """Return bearer token for Twitter API v2"""
         # Twitter does not frequently auto-expire bearer tokens. This will not
         # return a new (changed) bearer once one is granted until that token
         # is revoked.
         self.log.debug("Requesting bearer token with consumer credentials...")
-        url = self.TWITTER_API + "/oauth2/token"
+        url = self.twitter_api + "/oauth2/token"
         fields = {"grant_type": "client_credentials"}
 
         result = self._post_request(url=url, fields=fields)
@@ -72,20 +71,20 @@ class AppAuthClient:
 
         return result["access_token"]
 
-    def revoke_bearer_token(self) -> None:
-        """Revoke and delete token in `TW_BEARER_TOKEN` environ variable"""
-        raise NotImplementedError("Twitter functionality missing. Use the dashboard!")
-        # token = os.getenv("TW_BEARER_TOKEN")
-        # if not token:
-        #     raise ValueError(f"No bearer token loaded: TW_BEARER_TOKEN={token}")
+    # def revoke_bearer_token(self) -> None:
+    #     """Revoke and delete token in `TW_BEARER_TOKEN` environ variable"""
+    #     raise NotImplementedError("Twitter functionality missing. Use the dashboard!")
+    #     token = os.getenv("TW_BEARER_TOKEN")
+    #     if not token:
+    #         raise ValueError(f"No bearer token loaded: TW_BEARER_TOKEN={token}")
 
-        # url = self.TWITTER_API + "/oauth2/invalidate_token"
-        # fields = {"access_token": token}
-        # result = self._post_request(url=url, fields=fields)
+    #     url = self.TWITTER_API + "/oauth2/invalidate_token"
+    #     fields = {"access_token": token}
+    #     result = self._post_request(url=url, fields=fields)
 
-        # if "access_token" not in result or result.get("access_token") != token:
-        #     self.log.error("Unexpected response: '%s'", result)
-        #     raise ValueError("Unexpected response! Token may still be active.")
+    #     if "access_token" not in result or result.get("access_token") != token:
+    #         self.log.error("Unexpected response: '%s'", result)
+    #         raise ValueError("Unexpected response! Token may still be active.")
 
     def _post_request(self, url: str, fields: dict[str, str]) -> dict[str, Any]:
         """Internal use: makes validate and invalidate calls, returns result"""
@@ -93,13 +92,11 @@ class AppAuthClient:
             "Content-Type": "applicaton/x-www-form-urlencoded;charset=UTF-8",
             "Authorization": "Basic " + self.encoded_credentials(),
         }
-        # Override urllib3's preference to encode body on POST
-        resp = Response(
-            self.http.http.request_encode_url(
-                method="POST",
-                url=url,
-                fields=fields,
-                headers=headers,
-            )
+        resp = self.http.post(
+            url=url,
+            body=fields,
+            headers=headers,
+            urlencode=True,
         )
+
         return resp.get_json() or {} if resp.has_success() else {}
