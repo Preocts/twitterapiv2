@@ -70,7 +70,7 @@ class MockHTTP:
             )
         )
         url = self._urls.pop(0)
-        if url in kwargs:
+        if "url" in kwargs:
             return resp if kwargs["url"] == url else None
 
         if any(str(arg) == url for arg in args):
