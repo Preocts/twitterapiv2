@@ -35,11 +35,16 @@ HEADERS = {
 class MockHTTP:
     def __init__(self) -> None:
         self._urls: list[str] = []
-        self._responses: list[dict[str, Any] | str] = []
+        self._responses: list[dict[str, Any] | str | bytes] = []
         self._statuses: list[int] = []
         self.called = 0
 
-    def add(self, url: str, response: dict[str, Any] | str, status: int) -> None:
+    def add(
+        self,
+        url: str,
+        response: dict[str, Any] | str | bytes,
+        status: int,
+    ) -> None:
         """Add response to mock. They will be replayed in order of creation"""
         self._urls.append(url)
         self._responses.append(response)
@@ -48,9 +53,18 @@ class MockHTTP:
     def _check_call(self, *args: Any, **kwargs: Any) -> Response | None:
         """Check that url is expected, return response or None"""
         self.called += 1
+        body = self._responses.pop(0)
+
+        if isinstance(body, dict):
+            body = json.dumps(body).encode()
+        elif isinstance(body, str):
+            body = body.encode()
+        else:
+            body = body
+
         resp = Response(
             HTTPResponse(
-                body=json.dumps(self._responses.pop(0)).encode(),
+                body=body,
                 headers=HEADERS,
                 status=self._statuses.pop(0),
             )

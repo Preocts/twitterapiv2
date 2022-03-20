@@ -1,26 +1,39 @@
+from typing import Generator
+from unittest.mock import patch
+
 import pytest
 from twitterapiv2.model.recent.data import Data
 from twitterapiv2.tweets_lookup import TweetsLookup
+from twitterapiv2.tweets_lookup import URL
+
+from tests.fixtures.mock_http import MockHTTP
 
 LUCKY_ID = "1461880347478528007"
 LUCKY_IDS = "1461880347478528007, 1461880346580979715"
 
+SINGLE_SEARCH = b'{"data":[{"id":"1461880347478528007","text":"Can you please play?"}]}'
+MULTI_SEARCH = b'{"data":[{"id":"1461880347478528007","text":"RT Hello"},{"id":"1461880346580979715","text":"RT Hello"}]}'  # noqa: E501
 
-def test_valid_single_search() -> None:
-    # NOTE: To re-record this test a valid bearer token must be
-    # injected into the env. Use the confest autouse fixture.
-    client = TweetsLookup()
+
+@pytest.fixture
+def client() -> Generator[TweetsLookup, None, None]:
+    tweetclient = TweetsLookup()
+    with patch.object(tweetclient, "http", MockHTTP()):
+        yield tweetclient
+
+
+def test_valid_single_search(client: TweetsLookup) -> None:
+    client.http.add(URL, SINGLE_SEARCH, 200)
+
     client.ids(LUCKY_ID)
     result = client.fetch()
-    assert result
     assert len(result) == 1
     assert isinstance(result[0], Data)
 
 
-def test_valid_multi_search() -> None:
-    # NOTE: To re-record this test a valid bearer token must be
-    # injected into the env. Use the confest autouse fixture.
-    client = TweetsLookup()
+def test_valid_multi_search(client: TweetsLookup) -> None:
+    client.http.add(URL, MULTI_SEARCH, 200)
+
     client.ids(LUCKY_IDS)
     result = client.fetch()
     assert len(result) == 2
