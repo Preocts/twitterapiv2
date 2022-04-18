@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from twitterapiv2.client_intrfc import ClientIntrfc
+from twitterapiv2.client_core import ClientCore
 from twitterapiv2.model.recent.data import Data
 
 URL = "https://api.twitter.com/2/tweets"
 
 
-class TweetsLookup(ClientIntrfc):
+class TweetsLookup(ClientCore):
     def __init__(self) -> None:
         """
         Return information about Tweet(s) specified by requested ID(s).

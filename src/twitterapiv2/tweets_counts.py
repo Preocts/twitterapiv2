@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from typing import Literal
 
-from twitterapiv2.client_intrfc import ClientIntrfc
+from twitterapiv2.client_core import ClientCore
 from twitterapiv2.model.tweet_count.tweet_count import TweetCount
 
 URL_RECENT = "https://api.twitter.com/2/tweets/counts/recent"
 URL_ALL = "https://api.twitter.com/2/tweets/counts/all"
 
 
-class TweetsCounts(ClientIntrfc):
+class TweetsCounts(ClientCore):
     def __init__(
         self,
         end_point: Literal["recent", "all"] = "recent",

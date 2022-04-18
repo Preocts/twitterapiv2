@@ -14,7 +14,7 @@ from twitterapiv2.model.response import Response
 _BEARER_TOKEN = "TW_BEARER_TOKEN"
 
 
-class ClientIntrfc:
+class ClientCore:
     def __init__(self) -> None:
         self.field_builder = Fields()
         self.http = HTTPClient()

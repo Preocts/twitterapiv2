@@ -2,7 +2,7 @@ from datetime import datetime
 from unittest.mock import MagicMock
 
 import pytest
-from twitterapiv2.client_intrfc import ClientIntrfc
+from twitterapiv2.client_core import ClientCore
 from twitterapiv2.exceptions import InvalidResponseError
 from twitterapiv2.exceptions import ThrottledError
 from twitterapiv2.model.response import Response
@@ -11,13 +11,13 @@ from tests.response_test import MOCK_RESPONSE
 
 
 def test_default_values() -> None:
-    client = ClientIntrfc()
+    client = ClientCore()
     assert client.limit_remaining == -1
     assert client.limit_reset is not None
 
 
 def test_properties() -> None:
-    client = ClientIntrfc()
+    client = ClientCore()
     expected_remaining = MOCK_RESPONSE.headers["x-rate-limit-remaining"]
     reset = MOCK_RESPONSE.headers["x-rate-limit-reset"]
     expected_reset = datetime.utcfromtimestamp(int(reset))
@@ -29,14 +29,14 @@ def test_properties() -> None:
 
 
 def test_more() -> None:
-    client = ClientIntrfc()
+    client = ClientCore()
     assert not client.more
     client._next_token = "not null"
     assert client.more
 
 
 def test_fields() -> None:
-    client = ClientIntrfc()
+    client = ClientCore()
     assert not len(client.fields)
 
     client.field_builder._fields = {
@@ -49,7 +49,7 @@ def test_fields() -> None:
 
 
 def test_fetch_not_implemented() -> None:
-    client = ClientIntrfc()
+    client = ClientCore()
     with pytest.raises(NotImplementedError):
         client.fetch()
 
@@ -72,26 +72,26 @@ class MockReponse:
 
 def test_response_handling_429() -> None:
     mock_resp = MockReponse(429, "")
-    client = ClientIntrfc()
+    client = ClientCore()
     with pytest.raises(ThrottledError):
         client.raise_on_response("https://", mock_resp)
 
 
 def test_response_handling_401() -> None:
     mock_resp = MockReponse(401, "")
-    client = ClientIntrfc()
+    client = ClientCore()
     with pytest.raises(InvalidResponseError):
         client.raise_on_response("https://", mock_resp)
 
 
 def test_response_handling_invalid() -> None:
     mock_resp = MockReponse(42, "")
-    client = ClientIntrfc()
+    client = ClientCore()
     with pytest.raises(InvalidResponseError):
         client.raise_on_response("https://", mock_resp)
 
 
 def test_response_handing_200() -> None:
     mock_resp = MockReponse(200, "")
-    client = ClientIntrfc()
+    client = ClientCore()
     client.raise_on_response("https://", mock_resp)
