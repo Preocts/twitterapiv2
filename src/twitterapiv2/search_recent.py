@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from twitterapiv2.client_intrfc import ClientIntrfc
+from twitterapiv2.client_core import ClientCore
 from twitterapiv2.model.recent.recent import Recent
 
 URL = "https://api.twitter.com/2/tweets/search/recent"
 
 
-class SearchRecent(ClientIntrfc):
+class SearchRecent(ClientCore):
     def __init__(self) -> None:
         """
         Create Search Recent client. Use methods to build query and .fetch() to run
