@@ -11,7 +11,7 @@ from base64 import b64encode
 from typing import Any
 from urllib import parse
 
-from twitterapiv2.http_client import HTTPClient
+from http_overeasy.http_client import HTTPClient
 
 
 class AppAuthClient:

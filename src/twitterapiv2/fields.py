@@ -1,3 +1,4 @@
+"""Builds fields for Twitter queries, used internally by client classes."""
 from __future__ import annotations
 
 import re
@@ -11,12 +12,12 @@ from twitterapiv2.util.rules import to_ISO8601
 
 class Fields:
     def __init__(self) -> None:
-        """Internal: Abstracts all field builder methods for implimentations"""
+        """Internal: Abstracts all field builder methods for implimentations."""
         self._fields: dict[str, Any] = {}
 
     @property
     def fields(self) -> dict[str, Any]:
-        """Returns fields"""
+        """Return field."""
         return self._fields
 
     def start_time(self, start: str | datetime | None) -> None:
@@ -40,11 +41,11 @@ class Fields:
         self._fields["end_time"] = end
 
     def since_id(self, since_id: str | None) -> None:
-        """Define since_id of query. Returns results with a Tweet ID greater than"""
+        """Define since_id of query. Returns results with a Tweet ID greater than."""
         self._fields["since_id"] = since_id if since_id else None
 
     def until_id(self, until_id: str | None) -> None:
-        """Define until_id of query. Returns results with a Tweet ID less than"""
+        """Define until_id of query. Returns results with a Tweet ID less than."""
         self._fields["until_id"] = until_id if until_id else None
 
     def expansions(self, expansions: str | None) -> None:
@@ -101,7 +102,7 @@ class Fields:
         self._fields["user.fields"] = user_fields if user_fields else None
 
     def max_results(self, max_results: int | None) -> None:
-        """A number between 10 and 100. By default, set at 10 results"""
+        """A number between 10 and 100. By default, set at 10 results."""
         if max_results is not None and max_results not in range(10, 101):
             raise ValueError("max_results must be between 10 and 100")
         self._fields["max_results"] = max_results if max_results else None
@@ -110,11 +111,11 @@ class Fields:
         self,
         granularity: Literal["minute", "hour", "day"] | None,
     ) -> None:
-        """Define the granularity that you want the timeseries count data grouped"""
+        """Define the granularity that you want the timeseries count data grouped."""
         self._fields["granularity"] = granularity if granularity else None
 
     def query(self, query: str | None) -> None:
-        """Sets a query string"""
+        """Set a query string."""
         self._fields["query"] = query
 
     def ids(self, ids: str | None) -> None:

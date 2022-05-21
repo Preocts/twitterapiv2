@@ -2,11 +2,12 @@ from typing import Generator
 from unittest.mock import patch
 
 import pytest
+from http_overeasy.client_mocker import ClientMocker
 from twitterapiv2.model.tweet_count.tweet_count import TweetCount
 from twitterapiv2.tweets_counts import TweetsCounts
 from twitterapiv2.tweets_counts import URL_RECENT
 
-from tests.fixtures.mock_http import MockHTTP
+from tests.fixtures.mock_headers import HEADERS
 
 MOCK_BODY = {
     "data": [
@@ -28,13 +29,12 @@ MOCK_BODY = {
 @pytest.fixture
 def client() -> Generator[TweetsCounts, None, None]:
     tweetclient = TweetsCounts()
-    mocker = MockHTTP()
-    with patch.object(tweetclient, "http", mocker):
+    with patch.object(tweetclient, "http", ClientMocker()):
         yield tweetclient
 
 
 def test_valid_count(client: TweetsCounts) -> None:
-    client.http.add(URL_RECENT, MOCK_BODY, 200)
+    client.http.add_response(MOCK_BODY, HEADERS, 200, URL_RECENT)
 
     client.query("hello")
 
