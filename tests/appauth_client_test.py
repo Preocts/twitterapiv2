@@ -3,9 +3,8 @@ from typing import Generator
 from unittest.mock import patch
 
 import pytest
+from http_overeasy.client_mocker import ClientMocker
 from twitterapiv2.appauth_client import AppAuthClient
-
-from tests.fixtures.mock_http import MockHTTP
 
 MOCK_KEY = "xvz1evFS4wEEPTGEFPHBog"
 MOCK_SECRET = "L8qq9PZyRg6ieKGEKhZolGC0vJWLw8iEJ88DRdyOg"
@@ -19,7 +18,7 @@ BAD_RESPONSE = '{"token_type":"bearer"}'
 @pytest.fixture
 def client() -> Generator[AppAuthClient, None, None]:
     appclient = AppAuthClient()
-    with patch.object(appclient, "http", MockHTTP()):
+    with patch.object(appclient, "http", ClientMocker()):
         yield appclient
 
 
@@ -47,7 +46,7 @@ def test_require_environ_vars() -> None:
 
 
 def test_set_bearer_token(client: AppAuthClient) -> None:
-    client.http.add(client.twitter_api + "/oauth2/token", MOCK_RESP, 200)
+    client.http.add_response(MOCK_RESP, {}, 200, client.twitter_api + "/oauth2/token")
 
     client.set_bearer_token()
 
@@ -55,7 +54,7 @@ def test_set_bearer_token(client: AppAuthClient) -> None:
 
 
 def test_fetch_bearer_token(client: AppAuthClient) -> None:
-    client.http.add(client.twitter_api + "/oauth2/token", MOCK_RESP, 200)
+    client.http.add_response(MOCK_RESP, {}, 200, client.twitter_api + "/oauth2/token")
 
     client.fetch_bearer_token()
 
@@ -63,14 +62,16 @@ def test_fetch_bearer_token(client: AppAuthClient) -> None:
 
 
 def test_invalid_bearer_request(client: AppAuthClient) -> None:
-    client.http.add(client.twitter_api + "/oauth2/token", BAD_REQUEST, 403)
+    client.http.add_response(BAD_REQUEST, {}, 403, client.twitter_api + "/oauth2/token")
 
     with pytest.raises(ValueError):
         client.set_bearer_token()
 
 
 def test_invalid_bearer_response(client: AppAuthClient) -> None:
-    client.http.add(client.twitter_api + "/oauth2/token", BAD_RESPONSE, 200)
+    client.http.add_response(
+        BAD_RESPONSE, {}, 200, client.twitter_api + "/oauth2/token"
+    )
 
     with pytest.raises(ValueError):
         client.set_bearer_token()

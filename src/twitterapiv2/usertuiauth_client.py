@@ -22,7 +22,7 @@ from hashlib import sha1
 from secrets import token_urlsafe
 from urllib import parse
 
-from twitterapiv2.http_client import HTTPClient
+from http_overeasy.http_client import HTTPClient
 from twitterapiv2.model.useroauthresponse import UserOAuthResponse
 
 BASE_URL = "https://api.twitter.com"

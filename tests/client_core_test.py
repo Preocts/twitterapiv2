@@ -2,12 +2,35 @@ from datetime import datetime
 from unittest.mock import MagicMock
 
 import pytest
+from http_overeasy.response import Response
 from twitterapiv2.client_core import ClientCore
 from twitterapiv2.exceptions import InvalidResponseError
 from twitterapiv2.exceptions import ThrottledError
-from twitterapiv2.model.response import Response
+from urllib3.response import HTTPResponse
 
-from tests.response_test import MOCK_RESPONSE
+BODY = b'{"data":[{"id":"1461880347478528007","text":"MOCK"}]}'
+HEADERS = {
+    "api-version": "2.30",
+    "cache-control": "no-cache, no-store, max-age=0",
+    "content-disposition": " attachment; filename=json.json",
+    "content-length": "248",
+    "content-type": "application/json; charset=utf-8",
+    "date": "Fri, 26 Nov 2021 09:04:24 UTC",
+    "server": "tsa_b",
+    "set-cookie": "",
+    "strict-transport-security": "max-age=631138519",
+    "x-access-level": "read",
+    "x-connection-hash": "025826e4ff9a90bd701f81d6380501dd64c46f17c69ca21dec15a7c52",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SAMEORIGIN",
+    "x-rate-limit-limit": "300",
+    "x-rate-limit-remaining": "297",
+    "x-rate-limit-reset": "1637917876",
+    "x-response-time": "62",
+    "x-xss-protection": "0",
+}
+
+MOCK_RESPONSE = HTTPResponse(body=BODY, headers=HEADERS, status=200)
 
 
 def test_default_values() -> None:

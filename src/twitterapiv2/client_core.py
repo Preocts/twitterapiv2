@@ -5,11 +5,12 @@ import os
 from datetime import datetime
 from typing import Any
 
+from http_overeasy.http_client import HTTPClient
+from http_overeasy.response import Response
 from twitterapiv2.exceptions import InvalidResponseError
 from twitterapiv2.exceptions import ThrottledError
 from twitterapiv2.fields import Fields
-from twitterapiv2.http_client import HTTPClient
-from twitterapiv2.model.response import Response
+from twitterapiv2.model.responseheader import ResponseHeader
 
 
 _BEARER_TOKEN = "TW_BEARER_TOKEN"
@@ -28,15 +29,16 @@ class ClientCore:
         """Number of calls remaining before next limit reset."""
         if self._last_response is None:
             return -1
-        return int(self._last_response.get_headers().x_rate_limit_remaining)
+        last_headers = ResponseHeader.build_from(self._last_response.get_headers())
+        return int(last_headers.x_rate_limit_remaining)
 
     @property
     def limit_reset(self) -> datetime:
         """Datetime of next limit reset as UTC unaware datetime."""
         if self._last_response is None:
             return datetime.now()
-        ts = int(self._last_response.get_headers().x_rate_limit_reset)
-        return datetime.utcfromtimestamp(ts)
+        last_headers = ResponseHeader.build_from(self._last_response.get_headers())
+        return datetime.utcfromtimestamp(int(last_headers.x_rate_limit_reset))
 
     @property
     def fields(self) -> dict[str, Any]:
