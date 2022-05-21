@@ -1,3 +1,4 @@
+"""Core class inherited by client classes."""
 from __future__ import annotations
 
 import os
@@ -16,6 +17,7 @@ _BEARER_TOKEN = "TW_BEARER_TOKEN"
 
 class ClientCore:
     def __init__(self) -> None:
+        """Define a ClientCore, contains `.field_builder()` and http client."""
         self.field_builder = Fields()
         self.http = HTTPClient()
         self._last_response: Response | None = None
@@ -23,14 +25,14 @@ class ClientCore:
 
     @property
     def limit_remaining(self) -> int:
-        """Number of calls remaining before next limit reset"""
+        """Number of calls remaining before next limit reset."""
         if self._last_response is None:
             return -1
         return int(self._last_response.get_headers().x_rate_limit_remaining)
 
     @property
     def limit_reset(self) -> datetime:
-        """Datetime of next limit reset as UTC unaware datetime"""
+        """Datetime of next limit reset as UTC unaware datetime."""
         if self._last_response is None:
             return datetime.now()
         ts = int(self._last_response.get_headers().x_rate_limit_reset)
@@ -38,23 +40,31 @@ class ClientCore:
 
     @property
     def fields(self) -> dict[str, Any]:
-        """Returns fields that have been defined (removed NoneTypes)"""
+        """Field values that have been defined. (removes 'None' values)"""
         fields = self.field_builder.fields
         fields["next_token"] = self._next_token
         return {key: value for key, value in fields.items() if value}
 
     @property
     def more(self) -> bool:
-        """True if more pages exist. Always starts as False"""
+        """True if more pages exist, default is False."""
         return bool(self._next_token)
 
     @property
     def headers(self) -> dict[str, str]:
-        """Build headers with TW_BEARER_TOKEN from environ"""
+        """Build headers with TW_BEARER_TOKEN from environ."""
         return {"Authorization": "Bearer " + os.getenv(_BEARER_TOKEN, "")}
 
     def get(self, url: str) -> dict[str, Any]:
-        """Sends a GET request to url with defined fields encoded into URL"""
+        """
+        Send GET request to url with defined fields encoded into URL.
+
+        Args:
+            url: Target Twitter API URL
+
+        Returns:
+            JSON response as dict[str, Any]
+        """
         self._last_response = self.http.get(url, self.fields, self.headers)
         self.raise_on_response(url, self._last_response)
         json_body = self._last_response.get_json() or {}
@@ -64,10 +74,19 @@ class ClientCore:
 
     def fetch(self) -> Any:
         """Override with specific implementation"""
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     def raise_on_response(self, url: str, resp: Response) -> None:
-        """Custom handling for Twitter status codes"""
+        """
+        Custom handling for Twitter status codes.
+
+        Args:
+            url: url response came from
+            resp: Response object
+
+        Returns:
+            None
+        """
         if resp.get_status() == 429:
             rst = resp.get_headers().x_rate_limit_reset
             raise ThrottledError(f"Throttled until '{rst}'")
