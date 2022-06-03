@@ -2,11 +2,14 @@ from datetime import datetime
 from unittest.mock import MagicMock
 
 import pytest
+from http_overeasy.http_client import urllib3
 from http_overeasy.response import Response
 from twitterapiv2.client_core import ClientCore
 from twitterapiv2.exceptions import InvalidResponseError
 from twitterapiv2.exceptions import ThrottledError
-from urllib3.response import HTTPResponse
+
+HTTPResponse = urllib3.HTTPResponse
+
 
 BODY = b'{"data":[{"id":"1461880347478528007","text":"MOCK"}]}'
 HEADERS = {
