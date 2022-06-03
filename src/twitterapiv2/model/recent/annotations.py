@@ -9,7 +9,7 @@ class Annotations(BaseModel):
     start: int
     end: int
     probability: float
-    type: str
+    type: str  # noqa: A003
     normalized_text: str
 
     @classmethod

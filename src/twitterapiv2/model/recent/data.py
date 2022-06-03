@@ -19,7 +19,7 @@ from twitterapiv2.model.recent.withheld import Withheld
 class Data(BaseModel):
     """Defines an empty Data object"""
 
-    id: str
+    id: str  # noqa: A003
     text: str
     created_at: str | None
     author_id: str | None

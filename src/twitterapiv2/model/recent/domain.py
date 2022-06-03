@@ -6,7 +6,7 @@ from twitterapiv2.model.base_model import BaseModel
 
 
 class Domain(BaseModel):
-    id: str
+    id: str  # noqa: A003
     name: str
     description: str
 

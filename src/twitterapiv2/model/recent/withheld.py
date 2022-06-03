@@ -6,7 +6,7 @@ from twitterapiv2.model.base_model import BaseModel
 
 
 class Withheld(BaseModel):
-    copyright: bool
+    copyright: bool  # noqa: A003
     country_code: list[Any]
     scope: int
 

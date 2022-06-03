@@ -6,7 +6,7 @@ from twitterapiv2.model.base_model import BaseModel
 
 
 class Coordinates(BaseModel):
-    type: str
+    type: str  # noqa: A003
     coordinates: list[float]
 
     @classmethod

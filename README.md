@@ -9,22 +9,20 @@
 ### Requirements:
 
 - [Python>=3.8](https://www.python.org/)
-- [secretbox>=2.1.0](https://pypi.org/project/secretbox/)
-- [urllib3>=1.26.7](https://pypi.org/project/urllib3/)
+- [secretbox>=v2.6.0](https://pypi.org/project/secretbox/)
+- [http_overeasy>=v1.2.3](https://github.com/Preocts/http_overeasy)
 
 During a re-write of [this project](https://github.com/Preocts/twwordmap) I started writing a wrapper for the Twitter API v2. It was fun enough to create that now its a stand-alone project. We'll see how far this goes!
 
-### Implemented
-- Authentication for bearer token
-- `tweets/search/recent` endpoint
-- `tweets/counts/recent` endpoint
-- `tweets/lookup` endpoint
-- Interface for `/tweets/` endpoint clients
-- TUI User Authentication
-
-### On Deck
-- Better documentation
-- Internal rate limit handlers
+### Work
+- [x] Authentication for bearer token
+- [x] `tweets/search/recent` endpoint
+- [x] `tweets/counts/recent` endpoint
+- [x] `tweets/lookup` endpoint
+- [x] Interface for `/tweets/` endpoint clients
+- [] TUI User Authentication
+- [] Better documentation
+- [] Internal rate limit handlers
 
 ---
 

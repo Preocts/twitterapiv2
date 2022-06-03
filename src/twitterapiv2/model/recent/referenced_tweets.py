@@ -6,8 +6,8 @@ from twitterapiv2.model.base_model import BaseModel
 
 
 class ReferencedTweets(BaseModel):
-    id: str
-    type: int
+    id: str  # noqa: A003
+    type: int  # noqa: A003
 
     @classmethod
     def build_from(cls, data: dict[str, Any]) -> ReferencedTweets:

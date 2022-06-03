@@ -29,7 +29,7 @@ class ResponseHeader(BaseModel):
 
     @classmethod
     def build_from(cls, data: dict[str, Any]) -> ResponseHeader:
-        """Provide urllib3 HTTPResponse object"""
+        """Provide http_overeasy Response object"""
         new = cls()
         new.date = data.get("date", "")
         new.server = data.get("server", "")
