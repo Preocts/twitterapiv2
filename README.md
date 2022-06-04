@@ -34,7 +34,7 @@ Create four environmental variables as follows:
 ```env
 TW_CONSUMER_KEY=[client key]
 TW_CONSUMER_SECRET=[client secret]
-TW_ACCESS_KEY=[access key]
+TW_ACCESS_TOKEN=[access key]
 TW_ACCESS_SECRET=[access secret]
 ```
 

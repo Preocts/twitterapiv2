@@ -36,7 +36,9 @@ class UserTUIAuthClient:
         self,
         *,
         tw_consumer_key: str | None = None,
-        tw_access_key: str | None = None,
+        tw_consumer_secret: str | None = None,
+        tw_access_token: str | None = None,
+        tw_access_secret: str | None = None,
     ) -> None:
         """Creates and manages 3-legged user authentication via TUI"""
         self.log = logging.getLogger(__name__)
@@ -45,7 +47,9 @@ class UserTUIAuthClient:
         self._user_auth: UserOAuthResponse | None = None
 
         self._tw_consumer_key = tw_consumer_key
-        self._tw_access_key = tw_access_key
+        self._tw_consumer_secret = tw_consumer_secret
+        self._tw_access_token = tw_access_token
+        self._tw_access_secret = tw_access_secret
 
     def _generate_oauth_header(self, header_values: dict[str, str]) -> dict[str, str]:
         """
@@ -84,7 +88,7 @@ class UserTUIAuthClient:
             KeyError: on missing environment varialbes
         """
         consumer_key = os.getenv("TW_CONSUMER_KEY", self._tw_consumer_key)
-        access_token = os.getenv("TW_ACCESS_TOKEN", self._tw_access_key)
+        access_token = os.getenv("TW_ACCESS_TOKEN", self._tw_access_token)
         if consumer_key is None or access_token is None:
             raise KeyError("Missing consumer/access environment variable(s).")
 
@@ -168,8 +172,10 @@ class UserTUIAuthClient:
         Raises
             KeyError: on missing environment variables
         """
-        consumer_secret = os.getenv("TW_CONSUMER_SECRET", self._tw_consumer_key)
-        access_secret = os.getenv("TW_ACCESS_SECRET", self._tw_access_key)
+        consumer_secret = os.getenv("TW_CONSUMER_SECRET", self._tw_consumer_secret)
+        access_secret = os.getenv("TW_ACCESS_SECRET", self._tw_access_secret)
+        print("test", consumer_secret, access_secret)
+
         if consumer_secret is None or access_secret is None:
             raise KeyError("Missing consumer/access environment variable(s).")
         base_bytes = base_string.encode("utf-8")
@@ -287,7 +293,7 @@ if __name__ == "__main__":
     from secretbox import SecretBox
 
     logging.basicConfig(level="DEBUG")
-    box = SecretBox(auto_load=True)
+    box = SecretBox(auto_load=True, debug_flag=True)
     client = UserTUIAuthClient()
     client.authenticate()
     print(client._user_auth)
