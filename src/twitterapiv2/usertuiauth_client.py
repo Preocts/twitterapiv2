@@ -174,7 +174,6 @@ class UserTUIAuthClient:
         """
         consumer_secret = os.getenv("TW_CONSUMER_SECRET", self._tw_consumer_secret)
         access_secret = os.getenv("TW_ACCESS_SECRET", self._tw_access_secret)
-        print("test", consumer_secret, access_secret)
 
         if consumer_secret is None or access_secret is None:
             raise KeyError("Missing consumer/access environment variable(s).")
