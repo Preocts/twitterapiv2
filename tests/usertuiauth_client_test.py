@@ -71,7 +71,7 @@ ACCESS_RESP = "oauth_token=1069768653757997056-8rVedS0KEQI9KvzLOtamAw0wZixSBB&oa
 
 def test_key_collect() -> None:
     client = UserTUIAuthClient()
-    assert client.generate_oauth_keys()
+    assert client._generate_oauth_keys()
 
 
 def test_key_collect_raises() -> None:
@@ -79,23 +79,25 @@ def test_key_collect_raises() -> None:
     with patch.dict(os.environ):
         del os.environ["TW_CONSUMER_KEY"]
         with pytest.raises(KeyError):
-            client.generate_oauth_keys()
+            client._generate_oauth_keys()
 
 
 def test_generate_paramter_string() -> None:
     client = UserTUIAuthClient()
     with patch.dict(os.environ, MOCK_TOKENS):
-        keys = client.generate_oauth_keys()
+        keys = client._generate_oauth_keys()
         keys["oauth_nonce"] = MOCK_VALUES["oauth_nonce"]
         keys["oauth_timestamp"] = MOCK_VALUES["oauth_timestamp"]
-        parameter_string = client.generate_parameter_string(keys, MOCK_VALUES["fields"])
+        parameter_string = client._generate_parameter_string(
+            keys, MOCK_VALUES["fields"]
+        )
     assert parameter_string == MOCK_VALUES["expected_parameter_string"]
 
 
 def test_generate_signature_base_string() -> None:
     client = UserTUIAuthClient()
     parameter_string = MOCK_VALUES["expected_parameter_string"]
-    base_string = client.generate_base_string(
+    base_string = client._generate_base_string(
         method=MOCK_VALUES["method"],
         route=MOCK_VALUES["route"],
         parameter_string=parameter_string,
@@ -107,7 +109,7 @@ def test_generate_signature_string() -> None:
     client = UserTUIAuthClient()
     base_string = MOCK_VALUES["expected_base_string"]
     with patch.dict(os.environ, MOCK_TOKENS):
-        signature = client.generate_signature_string(base_string)
+        signature = client._generate_signature_string(base_string)
     assert signature == MOCK_VALUES["expected_signature"]
 
 
@@ -116,18 +118,18 @@ def test_generate_signature_string_raises() -> None:
     with patch.dict(os.environ):
         del os.environ["TW_CONSUMER_SECRET"]
         with pytest.raises(KeyError):
-            client.generate_signature_string("")
+            client._generate_signature_string("")
 
 
 def test_generate_oauth_header() -> None:
     client = UserTUIAuthClient()
-    header = client.generate_oauth_header(MOCK_HEADER_VALUES)
+    header = client._generate_oauth_header(MOCK_HEADER_VALUES)
     assert header == MOCK_VALUES["expected_header"]
 
 
 def test_user_authentication_request_fails() -> None:
     client = UserTUIAuthClient()
-    with patch.object(client, "request_user_permission") as user_perm:
+    with patch.object(client, "_request_user_permission") as user_perm:
         user_perm.return_value = None
         assert client.authenticate() is False
         user_perm.reset_mock()
@@ -135,10 +137,10 @@ def test_user_authentication_request_fails() -> None:
 
 def test_user_authentication_validation_fails() -> None:
     client = UserTUIAuthClient()
-    with patch.object(client, "request_user_permission") as user_perm:
+    with patch.object(client, "_request_user_permission") as user_perm:
         user_perm.return_value = MOCK_RESPONSE
         with patch("builtins.input", lambda user_in: "PIN"):
-            with patch.object(client, "validate_authentication") as validate:
+            with patch.object(client, "_validate_authentication") as validate:
                 validate.return_value = None
                 assert client.authenticate() is False
                 assert user_perm.call_count == 1
@@ -148,10 +150,10 @@ def test_user_authentication_validation_fails() -> None:
 
 def test_user_authentication_success() -> None:
     client = UserTUIAuthClient()
-    with patch.object(client, "request_user_permission") as user_perm:
+    with patch.object(client, "_request_user_permission") as user_perm:
         user_perm.return_value = MOCK_RESPONSE
         with patch("builtins.input", lambda user_in: "PIN"):
-            with patch.object(client, "validate_authentication") as validate:
+            with patch.object(client, "_validate_authentication") as validate:
                 validate.return_value = MOCK_RESPONSE
                 assert client.authenticate() is True
                 assert user_perm.call_count == 1
@@ -163,7 +165,7 @@ def test_request_user_permission_success() -> None:
     client = UserTUIAuthClient()
     request = MagicMock(return_value=MagicMock(data=USER_RESP.encode()))
     with patch.object(client.http.http, "request", request):
-        result = client.request_user_permission()
+        result = client._request_user_permission()
         assert isinstance(result, UserOAuthResponse)
 
 
@@ -171,7 +173,7 @@ def test_request_user_permission_failure() -> None:
     client = UserTUIAuthClient()
     request = MagicMock(return_value=MagicMock(data=b"errors"))
     with patch.object(client.http.http, "request", request):
-        result = client.request_user_permission()
+        result = client._request_user_permission()
         assert result is None
 
 
@@ -179,7 +181,7 @@ def test_validate_authentication_success() -> None:
     client = UserTUIAuthClient()
     request = MagicMock(return_value=MagicMock(data=USER_RESP.encode()))
     with patch.object(client.http.http, "request_encode_url", request):
-        result = client.validate_authentication("mock", "mock")
+        result = client._validate_authentication("mock", "mock")
         assert isinstance(result, UserOAuthResponse)
 
 
@@ -187,5 +189,5 @@ def test_validate_authentication_failure() -> None:
     client = UserTUIAuthClient()
     request = MagicMock(return_value=MagicMock(data=b"errors"))
     with patch.object(client.http.http, "request_encode_url", request):
-        result = client.validate_authentication("mock", "mock")
+        result = client._validate_authentication("mock", "mock")
         assert result is None

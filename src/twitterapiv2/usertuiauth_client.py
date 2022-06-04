@@ -32,14 +32,22 @@ USER_AUTH_PROMPT = "Click on link, accept, and enter the resulting PIN to authen
 class UserTUIAuthClient:
     """Creates and manages 3-legged user authentication via TUI"""
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        *,
+        tw_consumer_key: str | None = None,
+        tw_access_key: str | None = None,
+    ) -> None:
         """Creates and manages 3-legged user authentication via TUI"""
         self.log = logging.getLogger(__name__)
         self.http = HTTPClient()
         self.callback_http = "oob"
         self._user_auth: UserOAuthResponse | None = None
 
-    def generate_oauth_header(self, header_values: dict[str, str]) -> dict[str, str]:
+        self._tw_consumer_key = tw_consumer_key
+        self._tw_access_key = tw_access_key
+
+    def _generate_oauth_header(self, header_values: dict[str, str]) -> dict[str, str]:
         """
         Generated OAuth header string
 
@@ -59,7 +67,7 @@ class UserTUIAuthClient:
             segments.append(f'{qkey}="{qvalue}"')
         return {"Authorization": "OAuth " + ", ".join(segments)}
 
-    def generate_oauth_keys(self) -> dict[str, str]:
+    def _generate_oauth_keys(self) -> dict[str, str]:
         """
         Collect all key:values needed for headers excluding `oauth_signature`
 
@@ -75,8 +83,8 @@ class UserTUIAuthClient:
         Raises
             KeyError: on missing environment varialbes
         """
-        consumer_key = os.getenv("TW_CONSUMER_KEY", None)
-        access_token = os.getenv("TW_ACCESS_TOKEN", None)
+        consumer_key = os.getenv("TW_CONSUMER_KEY", self._tw_consumer_key)
+        access_token = os.getenv("TW_ACCESS_TOKEN", self._tw_access_key)
         if consumer_key is None or access_token is None:
             raise KeyError("Missing consumer/access environment variable(s).")
 
@@ -90,7 +98,7 @@ class UserTUIAuthClient:
         }
         return keys
 
-    def generate_parameter_string(
+    def _generate_parameter_string(
         self,
         oauth_keys: dict[str, str],
         fields: dict[str, str] | None = None,
@@ -117,7 +125,7 @@ class UserTUIAuthClient:
             parameter_segments.append(f"{key}={value}")
         return "&".join(parameter_segments)
 
-    def generate_base_string(
+    def _generate_base_string(
         self,
         method: str,
         route: str,
@@ -142,7 +150,7 @@ class UserTUIAuthClient:
         base_string += parse.quote(parameter_string, safe="")
         return base_string
 
-    def generate_signature_string(self, base_string: str) -> str:
+    def _generate_signature_string(self, base_string: str) -> str:
         """
         Generate OAuth1 sha1 signature
 
@@ -160,8 +168,8 @@ class UserTUIAuthClient:
         Raises
             KeyError: on missing environment variables
         """
-        consumer_secret = os.getenv("TW_CONSUMER_SECRET", None)
-        access_secret = os.getenv("TW_ACCESS_SECRET", None)
+        consumer_secret = os.getenv("TW_CONSUMER_SECRET", self._tw_consumer_key)
+        access_secret = os.getenv("TW_ACCESS_SECRET", self._tw_access_key)
         if consumer_secret is None or access_secret is None:
             raise KeyError("Missing consumer/access environment variable(s).")
         base_bytes = base_string.encode("utf-8")
@@ -194,7 +202,7 @@ class UserTUIAuthClient:
         Raises
             None
         """
-        user_resp = self.request_user_permission()
+        user_resp = self._request_user_permission()
         if user_resp is None:
             return False
         print(USER_AUTH_PROMPT)
@@ -205,11 +213,11 @@ class UserTUIAuthClient:
 
         pin = input("Enter authentication PIN: ")
 
-        self._user_auth = self.validate_authentication(user_resp.oauth_token, pin)
+        self._user_auth = self._validate_authentication(user_resp.oauth_token, pin)
 
         return bool(self._user_auth)
 
-    def request_user_permission(self) -> UserOAuthResponse | None:
+    def _request_user_permission(self) -> UserOAuthResponse | None:
         """
         Request user permission to access their account
 
@@ -222,18 +230,18 @@ class UserTUIAuthClient:
         Raises
             None
         """
-        oauth_keys = self.generate_oauth_keys()
+        oauth_keys = self._generate_oauth_keys()
         fields = {"oauth_callback": self.callback_http}
-        param = self.generate_parameter_string(oauth_keys, fields)
-        base = self.generate_base_string("POST", "/oauth/request_token", param)
-        oauth_keys["oauth_signature"] = self.generate_signature_string(base)
+        param = self._generate_parameter_string(oauth_keys, fields)
+        base = self._generate_base_string("POST", "/oauth/request_token", param)
+        oauth_keys["oauth_signature"] = self._generate_signature_string(base)
         url = f"{BASE_URL}/oauth/request_token?oauth_callback="
         url += parse.quote(self.callback_http)
 
         result = self.http.http.request(
             method="POST",
             url=url,
-            headers=self.generate_oauth_header(oauth_keys),
+            headers=self._generate_oauth_header(oauth_keys),
         )
         try:
             return UserOAuthResponse.from_resp_string(result.data.decode("utf-8"))
@@ -241,7 +249,7 @@ class UserTUIAuthClient:
             self.log.error("Authentication failed: '%s'", result.data)
             return None
 
-    def validate_authentication(
+    def _validate_authentication(
         self,
         oauth_token: str,
         verifier: str,
