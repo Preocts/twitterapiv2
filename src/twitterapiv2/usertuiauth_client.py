@@ -22,7 +22,7 @@ from hashlib import sha1
 from secrets import token_urlsafe
 from urllib import parse
 
-from http_overeasy.http_client import HTTPClient
+import httpx
 from twitterapiv2.model.useroauthresponse import UserOAuthResponse
 
 BASE_URL = "https://api.twitter.com"
@@ -42,7 +42,7 @@ class UserTUIAuthClient:
     ) -> None:
         """Creates and manages 3-legged user authentication via TUI"""
         self.log = logging.getLogger(__name__)
-        self.http = HTTPClient()
+        self.http = httpx.Client()
         self.callback_http = "oob"
         self._user_auth: UserOAuthResponse | None = None
 
@@ -243,16 +243,12 @@ class UserTUIAuthClient:
         url = f"{BASE_URL}/oauth/request_token?oauth_callback="
         url += parse.quote(self.callback_http)
 
-        result = self.http.http.request(
-            method="POST",
-            url=url,
-            headers=self._generate_oauth_header(oauth_keys),
-        )
-        try:
-            return UserOAuthResponse.from_resp_string(result.data.decode("utf-8"))
-        except ValueError:
-            self.log.error("Authentication failed: '%s'", result.data)
+        resp = self.http.post(url, headers=self._generate_oauth_header(oauth_keys))
+
+        if not resp.status_code not in range(200, 300):
+            self.log.error("Failed to request user permission. %s", resp.text)
             return None
+        return UserOAuthResponse.from_resp_string(resp.text)
 
     def _validate_authentication(
         self,
@@ -260,10 +256,7 @@ class UserTUIAuthClient:
         verifier: str,
     ) -> UserOAuthResponse | None:
         """
-        Converts user response token and PIN to useable access tokens
-
-        Requires `TW_CONSUMER_KEY` to be set in environment
-        variables or will raise.
+        Convert user response token and PIN to useable access tokens.
 
         Args
             oauth_token: token from user permission step
@@ -271,21 +264,14 @@ class UserTUIAuthClient:
 
         Returns
             UserOAuthResponse | None: User access response values
-
-        Raises
-            None
         """
-        fields = {"oauth_token": oauth_token, "oauth_verifier": verifier}
-        result = self.http.http.request_encode_url(
-            method="POST",
-            url=f"{BASE_URL}/oauth/access_token",
-            fields=fields,
-        )
-        try:
-            return UserOAuthResponse.from_resp_string(result.data.decode("utf-8"))
-        except ValueError:
-            self.log.error("Authentication failed: '%s'", result.data)
+        params = {"oauth_token": oauth_token, "oauth_verifier": verifier}
+        resp = self.http.post(f"{BASE_URL}/oauth/access_token", params=params)
+
+        if resp.status_code not in range(200, 300):
+            self.log.error("Failed to validate user authentication. %s", resp.text)
             return None
+        return UserOAuthResponse.from_resp_string(resp.text)
 
 
 if __name__ == "__main__":
@@ -294,5 +280,7 @@ if __name__ == "__main__":
     logging.basicConfig(level="DEBUG")
     box = SecretBox(auto_load=True, debug_flag=True)
     client = UserTUIAuthClient()
+    result = client._request_user_permission()
+
     client.authenticate()
     print(client._user_auth)
