@@ -14,8 +14,8 @@ ACCESS_PATTERN = (
 class UserOAuthResponse(NamedTuple):
     oauth_token: str
     oauth_token_secret: str
-    user_id: str = ""
-    screen_name: str = ""
+    user_id: str | None = None
+    screen_name: str | None = None
 
     @classmethod
     def from_resp_string(cls, response: str) -> UserOAuthResponse:
