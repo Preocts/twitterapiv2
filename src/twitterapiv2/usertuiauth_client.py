@@ -35,10 +35,10 @@ class UserTUIAuthClient:
     def __init__(
         self,
         *,
-        tw_consumer_key: str | None = None,
-        tw_consumer_secret: str | None = None,
-        tw_access_token: str | None = None,
-        tw_access_secret: str | None = None,
+        consumer_key: str | None = None,
+        consumer_secret: str | None = None,
+        access_token: str | None = None,
+        access_secret: str | None = None,
     ) -> None:
         """Creates and manages 3-legged user authentication via TUI"""
         self.log = logging.getLogger(__name__)
@@ -46,10 +46,20 @@ class UserTUIAuthClient:
         self.callback_http = "oob"
         self._user_auth: UserOAuthResponse | None = None
 
-        self._tw_consumer_key = tw_consumer_key
-        self._tw_consumer_secret = tw_consumer_secret
-        self._tw_access_token = tw_access_token
-        self._tw_access_secret = tw_access_secret
+        self._consumer_key = consumer_key or os.getenv("TW_CONSUMER_KEY") or ""
+        self._consumer_secret = consumer_secret or os.getenv("TW_CONSUMER_SECRET") or ""
+        self._access_token = access_token or os.getenv("TW_ACCESS_TOKEN") or ""
+        self._access_secret = access_secret or os.getenv("TW_ACCESS_SECRET") or ""
+
+        if not all(
+            [
+                self._consumer_secret,
+                self._consumer_key,
+                self._access_secret,
+                self._access_token,
+            ]
+        ):
+            raise ValueError("Missing required environment variables or parameters.")
 
     def _generate_oauth_header(self, header_values: dict[str, str]) -> dict[str, str]:
         """
@@ -87,17 +97,12 @@ class UserTUIAuthClient:
         Raises
             KeyError: on missing environment varialbes
         """
-        consumer_key = os.getenv("TW_CONSUMER_KEY", self._tw_consumer_key)
-        access_token = os.getenv("TW_ACCESS_TOKEN", self._tw_access_token)
-        if consumer_key is None or access_token is None:
-            raise KeyError("Missing consumer/access environment variable(s).")
-
         keys = {
-            "oauth_consumer_key": consumer_key,
+            "oauth_consumer_key": self._consumer_key,
             "oauth_nonce": token_urlsafe(),
             "oauth_signature_method": "HMAC-SHA1",
             "oauth_timestamp": f"{int(datetime.utcnow().timestamp())}",
-            "oauth_token": access_token,
+            "oauth_token": self._access_token,
             "oauth_version": "1.0",
         }
         return keys
@@ -172,16 +177,11 @@ class UserTUIAuthClient:
         Raises
             KeyError: on missing environment variables
         """
-        consumer_secret = os.getenv("TW_CONSUMER_SECRET", self._tw_consumer_secret)
-        access_secret = os.getenv("TW_ACCESS_SECRET", self._tw_access_secret)
-
-        if consumer_secret is None or access_secret is None:
-            raise KeyError("Missing consumer/access environment variable(s).")
         base_bytes = base_string.encode("utf-8")
         combined = (
-            parse.quote(consumer_secret, safe="")
+            parse.quote(self._consumer_secret, safe="")
             + "&"
-            + parse.quote(access_secret, safe="")
+            + parse.quote(self._access_secret, safe="")
         ).encode("utf-8")
         hash_bytes = hmac.new(combined, base_bytes, sha1).digest()
         return base64.encodebytes(hash_bytes).decode("utf-8").rstrip("\n")
@@ -244,8 +244,8 @@ class UserTUIAuthClient:
         url += parse.quote(self.callback_http)
 
         resp = self.http.post(url, headers=self._generate_oauth_header(oauth_keys))
-
-        if not resp.status_code not in range(200, 300):
+        print("Request user permission", resp.status_code)
+        if resp.status_code not in range(200, 300):
             self.log.error("Failed to request user permission. %s", resp.text)
             return None
         return UserOAuthResponse.from_resp_string(resp.text)
@@ -267,7 +267,7 @@ class UserTUIAuthClient:
         """
         params = {"oauth_token": oauth_token, "oauth_verifier": verifier}
         resp = self.http.post(f"{BASE_URL}/oauth/access_token", params=params)
-
+        print("Validate Auth", resp.status_code)
         if resp.status_code not in range(200, 300):
             self.log.error("Failed to validate user authentication. %s", resp.text)
             return None

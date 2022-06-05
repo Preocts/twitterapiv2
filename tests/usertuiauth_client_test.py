@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from typing import Any
+from typing import Generator
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
@@ -69,17 +70,28 @@ USER_RESP = "oauth_token=UsPAbAAAAAABVjj_AAABfYO81xo&oauth_token_secret=mwr3uC5L
 ACCESS_RESP = "oauth_token=1069768653757997056-8rVedS0KEQI9KvzLOtamAw0wZixSBB&oauth_token_secret=i3OCVHR0AGXjMrCcrBtedNi89vUm4YovBo67cE8Xaf4z8&user_id=1069768653757997&screen_name=preocts"  # noqa
 
 
+@pytest.fixture(autouse=True)
+def mask_environ() -> Generator[None, None, None]:
+    """Mask existing creds in environment - used on all tests"""
+    # Overrides existing values from conftest.py
+    with patch.dict(os.environ, MOCK_TOKENS):
+        yield None
+
+
+@pytest.mark.parametrize(
+    ("pop_key"),
+    ("TW_CONSUMER_KEY", "TW_CONSUMER_SECRET", "TW_ACCESS_TOKEN", "TW_ACCESS_SECRET"),
+)
+def test_initialization_raises_error_if_env_vars_missing(pop_key: str) -> None:
+    with patch.dict(os.environ):
+        os.environ.pop(pop_key)
+        with pytest.raises(ValueError):
+            UserTUIAuthClient()
+
+
 def test_key_collect() -> None:
     client = UserTUIAuthClient()
     assert client._generate_oauth_keys()
-
-
-def test_key_collect_raises() -> None:
-    client = UserTUIAuthClient()
-    with patch.dict(os.environ):
-        del os.environ["TW_CONSUMER_KEY"]
-        with pytest.raises(KeyError):
-            client._generate_oauth_keys()
 
 
 def test_generate_paramter_string() -> None:
@@ -111,14 +123,6 @@ def test_generate_signature_string() -> None:
     with patch.dict(os.environ, MOCK_TOKENS):
         signature = client._generate_signature_string(base_string)
     assert signature == MOCK_VALUES["expected_signature"]
-
-
-def test_generate_signature_string_raises() -> None:
-    client = UserTUIAuthClient()
-    with patch.dict(os.environ):
-        del os.environ["TW_CONSUMER_SECRET"]
-        with pytest.raises(KeyError):
-            client._generate_signature_string("")
 
 
 def test_generate_oauth_header() -> None:
@@ -163,24 +167,24 @@ def test_user_authentication_success() -> None:
 
 def test_request_user_permission_success() -> None:
     client = UserTUIAuthClient()
-    request = MagicMock(return_value=MagicMock(data=USER_RESP.encode()))
-    with patch.object(client.http.http, "request", request):
+    request = MagicMock(return_value=MagicMock(status_code=200, text=USER_RESP))
+    with patch.object(client.http, "post", request):
         result = client._request_user_permission()
         assert isinstance(result, UserOAuthResponse)
 
 
 def test_request_user_permission_failure() -> None:
     client = UserTUIAuthClient()
-    request = MagicMock(return_value=MagicMock(data=b"errors"))
-    with patch.object(client.http.http, "request", request):
+    request = MagicMock(return_value=MagicMock(status_code=401, text="errors"))
+    with patch.object(client.http, "post", request):
         result = client._request_user_permission()
         assert result is None
 
 
 def test_validate_authentication_success() -> None:
     client = UserTUIAuthClient()
-    request = MagicMock(return_value=MagicMock(data=USER_RESP.encode()))
-    with patch.object(client.http.http, "request_encode_url", request):
+    request = MagicMock(return_value=MagicMock(status_code=200, text=USER_RESP))
+    with patch.object(client.http, "post", request):
         result = client._validate_authentication("mock", "mock")
         assert isinstance(result, UserOAuthResponse)
 
@@ -188,6 +192,6 @@ def test_validate_authentication_success() -> None:
 def test_validate_authentication_failure() -> None:
     client = UserTUIAuthClient()
     request = MagicMock(return_value=MagicMock(data=b"errors"))
-    with patch.object(client.http.http, "request_encode_url", request):
+    with patch.object(client.http, "post", request):
         result = client._validate_authentication("mock", "mock")
         assert result is None
