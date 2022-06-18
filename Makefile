@@ -1,16 +1,20 @@
 .PHONY: init
 init:
-	pip install --upgrade pip setuptools wheel pip-tools
+	pip install --upgrade pip setuptools wheel
 
 .PHONY: install
 install:
-	pip install .
+	python -m pip install --upgrade .
 
 .PHONY: install-dev
 install-dev:
-	pip install -r requirements-dev.txt
-	pip install --editable .
+	python -m pip install --editable .[dev]
 	pre-commit install
+
+.PHONY: build-dist
+build-dist:
+	pip install --upgrade build
+	python -m build
 
 .PHONY: clean-artifacts
 clean-artifacts:
@@ -23,6 +27,7 @@ clean-artifacts:
 clean-tests:
 	rm -f coverage.xml
 	rm -rf .tox
+	rm -rf coverage_html_report
 	rm -rf .coverage
 	find . -name '.pytest_cache' -exec rm -rf {} +
 
@@ -33,8 +38,3 @@ clean-build:
 
 .PHONY: clean-all
 clean-all: clean-artifacts clean-tests clean-build
-
-.PHONY: build-dist
-build-dist:
-	rm -rf ./dist
-	python setup.py sdist bdist_wheel
