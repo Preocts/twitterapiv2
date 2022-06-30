@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pytest
 from twitterapiv2.model.useroauthresponse import UserOAuthResponse
 

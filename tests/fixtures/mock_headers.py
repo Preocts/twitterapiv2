@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 HEADERS = {
     "api-version": "2.30",
     "cache-control": "no-cache, no-store, max-age=0",

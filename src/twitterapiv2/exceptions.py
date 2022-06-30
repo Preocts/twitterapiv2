@@ -1,4 +1,6 @@
-# TODO: Build model for exception response
+from __future__ import annotations
+
+
 class InvalidResponseError(Exception):
     ...
 
