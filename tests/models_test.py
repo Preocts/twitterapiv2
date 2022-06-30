@@ -7,6 +7,8 @@ Simple tests for all the models
 1. Ensure model `.to_json()` matches input fixture
 
 """
+from __future__ import annotations
+
 import json
 
 import pytest
