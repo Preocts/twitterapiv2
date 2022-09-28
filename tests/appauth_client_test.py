@@ -5,8 +5,9 @@ from typing import Generator
 from unittest.mock import patch
 
 import pytest
-from http_overeasy.client_mocker import ClientMocker
 from twitterapiv2.appauth_client import AppAuthClient
+
+from tests.fixtures.clientmocker import ClientMocker
 
 MOCK_KEY = "xvz1evFS4wEEPTGEFPHBog"
 MOCK_SECRET = "L8qq9PZyRg6ieKGEKhZolGC0vJWLw8iEJ88DRdyOg"

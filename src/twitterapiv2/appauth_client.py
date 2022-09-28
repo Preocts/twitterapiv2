@@ -11,7 +11,7 @@ from base64 import b64encode
 from typing import Any
 from urllib import parse
 
-from http_overeasy.http_client import HTTPClient
+import httpx
 
 
 class AppAuthClient:
@@ -29,7 +29,7 @@ class AppAuthClient:
     twitter_api = "https://api.twitter.com"
 
     def __init__(self) -> None:
-        self.http = HTTPClient()
+        self.http = httpx.Client()
         self.log = logging.getLogger(__name__)
 
     def encoded_credentials(self) -> str:
@@ -94,9 +94,8 @@ class AppAuthClient:
         }
         resp = self.http.post(
             url=url,
-            body=fields,
+            params=fields,
             headers=headers,
-            urlencode=True,
         )
 
-        return resp.get_json() or {} if resp.has_success() else {}
+        return resp.json() if resp.is_success else {}
