@@ -4,11 +4,11 @@ from typing import Generator
 from unittest.mock import patch
 
 import pytest
-from http_overeasy.client_mocker import ClientMocker
 from twitterapiv2.model.recent.data import Data
 from twitterapiv2.tweets_lookup import TweetsLookup
 from twitterapiv2.tweets_lookup import URL
 
+from tests.fixtures.clientmocker import ClientMocker
 from tests.fixtures.mock_headers import HEADERS
 
 LUCKY_ID = "1461880347478528007"

@@ -1,14 +1,15 @@
 from __future__ import annotations
 
+import json
 from typing import Generator
 from unittest.mock import patch
 
 import pytest
-from http_overeasy.client_mocker import ClientMocker
 from twitterapiv2.model.tweet_count.tweet_count import TweetCount
 from twitterapiv2.tweets_counts import TweetsCounts
 from twitterapiv2.tweets_counts import URL_RECENT
 
+from tests.fixtures.clientmocker import ClientMocker
 from tests.fixtures.mock_headers import HEADERS
 
 MOCK_BODY = {
@@ -36,7 +37,7 @@ def client() -> Generator[TweetsCounts, None, None]:
 
 
 def test_valid_count(client: TweetsCounts) -> None:
-    client.http.add_response(MOCK_BODY, HEADERS, 200, URL_RECENT)
+    client.http.add_response(json.dumps(MOCK_BODY), HEADERS, 200, URL_RECENT)
 
     client.query("hello")
 
