@@ -5,12 +5,10 @@ import os
 from datetime import datetime
 from typing import Any
 
-from http_overeasy.http_client import HTTPClient
-from http_overeasy.response import Response
+import httpx
 from twitterapiv2.exceptions import InvalidResponseError
 from twitterapiv2.exceptions import ThrottledError
 from twitterapiv2.fields import Fields
-from twitterapiv2.model.responseheader import ResponseHeader
 
 
 _BEARER_TOKEN = "TW_BEARER_TOKEN"
@@ -20,8 +18,8 @@ class ClientCore:
     def __init__(self) -> None:
         """Define a ClientCore, contains `.field_builder()` and http client."""
         self.field_builder = Fields()
-        self.http = HTTPClient()
-        self._last_response: Response | None = None
+        self.http = httpx.Client()
+        self._last_response: httpx.Response | None = None
         self._next_token: str | None = None
 
     @property
@@ -29,16 +27,15 @@ class ClientCore:
         """Number of calls remaining before next limit reset."""
         if self._last_response is None:
             return -1
-        last_headers = ResponseHeader.build_from(self._last_response.get_headers())
-        return int(last_headers.x_rate_limit_remaining)
+        return int(self._last_response.headers["x-rate-limit-remaining"])
 
     @property
     def limit_reset(self) -> datetime:
         """Datetime of next limit reset as UTC unaware datetime."""
         if self._last_response is None:
             return datetime.now()
-        last_headers = ResponseHeader.build_from(self._last_response.get_headers())
-        return datetime.utcfromtimestamp(int(last_headers.x_rate_limit_reset))
+        rst = self._last_response.headers["x-rate-limit-reset"]
+        return datetime.utcfromtimestamp(int(rst))
 
     @property
     def fields(self) -> dict[str, Any]:
@@ -67,9 +64,13 @@ class ClientCore:
         Returns:
             JSON response as dict[str, Any]
         """
-        self._last_response = self.http.get(url, self.fields, self.headers)
+        self._last_response = self.http.get(
+            url=url,
+            params=self.fields,
+            headers=self.headers,
+        )
         self.raise_on_response(url, self._last_response)
-        json_body = self._last_response.get_json() or {}
+        json_body = self._last_response.json()
         meta = json_body.get("meta")
         self._next_token = meta.get("next_token") if meta else None
         return json_body
@@ -78,7 +79,7 @@ class ClientCore:
         """Override with specific implementation"""
         raise NotImplementedError
 
-    def raise_on_response(self, url: str, resp: Response) -> None:
+    def raise_on_response(self, url: str, resp: httpx.Response) -> None:
         """
         Custom handling for Twitter status codes.
 
@@ -89,10 +90,8 @@ class ClientCore:
         Returns:
             None
         """
-        if resp.get_status() == 429:
-            rst = resp.get_headers().x_rate_limit_reset
+        if resp.status_code == 429:
+            rst = resp.headers["x-rate-limit-reset"]
             raise ThrottledError(f"Throttled until '{rst}'")
-        if not (200 <= resp.get_status() < 300):
-            raise InvalidResponseError(
-                f"{resp.get_status()}: {url} - '{resp.get_body()}"
-            )
+        if not (200 <= resp.status_code < 300):
+            raise InvalidResponseError(f"{resp.status_code}: {url} - '{resp.text}")
