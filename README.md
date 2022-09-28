@@ -9,8 +9,7 @@
 ### Requirements:
 
 - [Python>=3.8](https://www.python.org/)
-- [secretbox>=v2.6.0](https://pypi.org/project/secretbox/)
-- [http_overeasy>=v1.2.3](https://github.com/Preocts/http_overeasy)
+- [httpx==0.23.0]
 
 During a re-write of [this project](https://github.com/Preocts/twwordmap) I
 started writing a wrapper for the Twitter API v2. It was fun enough to create

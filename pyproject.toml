@@ -25,7 +25,6 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: CPython"
 ]
 dependencies = [
-    "http-overeasy@git+https://github.com/preocts/http_overeasy@v1.3.2",
     "httpx==0.23.0"
 ]
 
@@ -45,7 +44,7 @@ test = [
 ]
 
 [project.urls]
-homepage = "https://github.com/[your repo]/[repo name]"
+homepage = "https://github.com/Preocts/twitterapiv2"
 # documentation = ""
 # repository = ""
 # changelog = ""
