@@ -23,10 +23,7 @@ class ClientMocker:
     def get(self, *args: Any, **kwargs: Any) -> Response:
         url = self._urls.pop(0)
         resp = self._responses.pop(0)
-        if args:
-            assert url in args
-        else:
-            assert kwargs["url"] == url
+        assert kwargs["url"] == url
 
         return resp
 
