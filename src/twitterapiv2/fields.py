@@ -3,11 +3,14 @@ from __future__ import annotations
 
 import re
 from datetime import datetime
-from typing import Any
-from typing import Literal
+from typing import TYPE_CHECKING
 
 from twitterapiv2.util.rules import is_ISO8601
 from twitterapiv2.util.rules import to_ISO8601
+
+if TYPE_CHECKING:
+    from typing import Any
+    from typing import Literal
 
 
 class Fields:

@@ -1,5 +1,7 @@
+[![Python 3.7 | 3.8 | 3.9 | 3.10 | 3.11](https://img.shields.io/badge/Python-3.7%20%7C%203.8%20%7C%203.9%20%7C%203.10%20%7C%203.11-blue)](https://www.python.org/downloads)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/Preocts/twitterapiv2/main.svg)](https://results.pre-commit.ci/latest/github/Preocts/twitterapiv2/main)
 [![Python package](https://github.com/Preocts/twitterapiv2/actions/workflows/python-tests.yml/badge.svg?branch=main)](https://github.com/Preocts/twitterapiv2/actions/workflows/python-tests.yml)
 
@@ -7,22 +9,12 @@
 
 ### Requirements:
 
-- [Python>=3.8](https://www.python.org/)
-- [httpx==0.23.0]
+- [Python>=3.7](https://www.python.org/)
+- [httpx>=0.23.1](https://pypi.org/project/httpx)
 
 During a re-write of [this project](https://github.com/Preocts/twwordmap) I
 started writing a wrapper for the Twitter API v2. It was fun enough to create
 that now its a stand-alone project. We'll see how far this goes!
-
-### Work
-- [x] Authentication for bearer token
-- [x] `tweets/search/recent` endpoint
-- [x] `tweets/counts/recent` endpoint
-- [x] `tweets/lookup` endpoint
-- [x] Interface for `/tweets/` endpoint clients
-- [] TUI User Authentication
-- [] Better documentation
-- [] Internal rate limit handlers
 
 ---
 
@@ -125,32 +117,52 @@ while True:
 
 ---
 
-## Local developer installation
+# Local developer installation
 
-It is **highly** recommended to use a `venv` for installation. Leveraging a
-`venv` will ensure the installed dependency files will not impact other python
-projects.
+It is **strongly** recommended to use a virtual environment
+([`venv`](https://docs.python.org/3/library/venv.html)) when working with python
+projects. Leveraging a `venv` will ensure the installed dependency files will
+not impact other python projects or any system dependencies.
+
+The following steps outline how to install this repo for local development. See
+the [CONTRIBUTING.md](CONTRIBUTING.md) file in the repo root for information on
+contributing to the repo.
+
+**Windows users**: Depending on your python install you will use `py` in place
+of `python` to create the `venv`.
+
+**Linux/Mac users**: Replace `python`, if needed, with the appropriate call to
+the desired version while creating the `venv`. (e.g. `python3` or `python3.8`)
+
+**All users**: Once inside an active `venv` all systems should allow the use of
+`python` for command line instructions. This will ensure you are using the
+`venv`'s python and not the system level python.
+
+---
+
+## Installation steps
 
 Clone this repo and enter root directory of repo:
-```bash
+
+```console
 $ git clone https://github.com/Preocts/twitterapiv2
 $ cd twitterapiv2
 ```
 
 Create the `venv`:
 
-```bash
-python -m venv venv
+```console
+$ python -m venv venv
 ```
 
 Activate the `venv`:
 
-```bash
+```console
 # Linux/Mac
-. venv/bin/activate
+$ . venv/bin/activate
 
 # Windows
-venv\Scripts\activate
+$ venv\Scripts\activate
 ```
 
 The command prompt should now have a `(venv)` prefix on it. `python` will now
@@ -158,18 +170,18 @@ call the version of the interpreter used to create the `venv`
 
 Install editable library and development requirements:
 
-```bash
+```console
 # Update pip and tools
-python -m pip install --upgrade pip
+$ python -m pip install --upgrade pip
 
 # Install editable version of library
-python -m pip install --editable .[dev]
+$ python -m pip install --editable .[dev]
 ```
 
 Install pre-commit [(see below for details)](#pre-commit):
 
-```bash
-pre-commit install
+```console
+$ pre-commit install
 ```
 
 ---
@@ -178,28 +190,28 @@ pre-commit install
 
 Run pre-commit on all files:
 
-```bash
-pre-commit run --all-files
+```console
+$ pre-commit run --all-files
 ```
 
 Run tests:
 
-```bash
-tox [-r] [-e py3x]
+```console
+$ tox [-r] [-e py3x]
 ```
 
 Build dist:
 
-```bash
-python -m pip install --upgrade build
+```console
+$ python -m pip install --upgrade build
 
-python -m build
+$ python -m build
 ```
 
 To deactivate (exit) the `venv`:
 
-```bash
-deactivate
+```console
+$ deactivate
 ```
 ---
 
@@ -235,13 +247,11 @@ This repo has a Makefile with some quality of life scripts if the system
 supports `make`.  Please note there are no checks for an active `venv` in the
 Makefile.
 
-| PHONY             | Description                                                      |
-| ----------------- | ---------------------------------------------------------------- |
-| `init`            | Update pip to newest version                                     |
-| `install`         | install the project                                              |
-| `install-dev`     | install development requirements and project as editable install |
-| `build-dist`      | Build source distribution and wheel distribution                 |
-| `clean-artifacts` | Deletes python/mypy artifacts, cache, and pyc files              |
-| `clean-tests`     | Deletes tox, coverage, and pytest artifacts                      |
-| `clean-build`     | Deletes build artifacts                                          |
-| `clean-all`       | Runs all clean scripts                                           |
+| PHONY         | Description                                                                |
+| ------------- | -------------------------------------------------------------------------- |
+| `init`        | Update pip to newest version                                               |
+| `install`     | install the project                                                        |
+| `install-dev` | install development/test requirements and project as editable install      |
+| `upgrade-dev` | update all dependencies, regenerate requirements.txt (disabled by default) |
+| `build-dist`  | Build source distribution and wheel distribution                           |
+| `clean`       | Deletes build, tox, coverage, pytest, mypy, cache, and pyc artifacts       |

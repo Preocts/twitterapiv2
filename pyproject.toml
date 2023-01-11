@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "twitterapiv2"
-version = "0.0.13"
-requires-python = ">=3.8"
+version = "0.2.0"
+requires-python = ">=3.7"
 description = "application authentication and access to Twitter api v2 endpoints"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -21,7 +21,7 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: CPython"
 ]
 dependencies = [
-    "httpx==0.23.0"
+    "httpx>=0.23.1"
 ]
 
 [project.optional-dependencies]
@@ -31,6 +31,7 @@ dev = [
     "mypy",
     "flake8",
     "flake8-builtins",
+    "flake8-pep585",
 ]
 test = [
     "pytest",
@@ -41,18 +42,9 @@ test = [
 
 [project.urls]
 homepage = "https://github.com/Preocts/twitterapiv2"
-# documentation = ""
-# repository = ""
-# changelog = ""
 
-[project.scripts]
-python-src-example = "module_name.sample:main"
-
-[tool.setuptools.packages.find]
-where = ["src"]  # ["."] by default
-include = ["*"]  # ["*"] by default
-exclude = ["tests"]  # empty by default
-namespaces = true  # true by default
+[tool.setuptools.package-data]
+"twitterapiv2" = ["py.typed"]
 
 [tool.mypy]
 check_untyped_defs = true
@@ -70,26 +62,31 @@ disallow_untyped_defs = false
 
 [tool.coverage.run]
 branch = true
-source = [ "tests" ]
-source_pkgs = [ "twitterapiv2" ]
+source = [
+    "tests",
+]
+source_pkgs = [
+    "twitterapiv2",
+]
+
+[tool.coverage.paths]
+source = [
+    "src/",
+    "*/site-packages",
+]
+test = [
+    "tests/",
+    "*/tests",
+]
 
 [tool.coverage.report]
 exclude_lines =[
     "pragma: no cover",
-    "def __repr__",
-    "if self\\.debug",
-    "raise AssertionError",
     "raise NotImplementedError",
-    "if 0:",
-    "if __name__ == .__main__.:"
+    "if __name__ == .__main__.:",
+    "\\.\\.\\.",
+    "if TYPE_CHECKING:",
 ]
-ignore_errors = true
-
-[tool.coverage.html]
-directory = "coverage_html_report"
-
-[tool.coverage.xml]
-output = "coverage.xml"
 
 # This is ignored by flake8, here in case they decide to add it in the future
 [tool.flake8]
@@ -99,20 +96,32 @@ max-line-length = 88
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = py38,py39,py310,py311,pre-commit
+envlist = py37,py38,py39,py310,py311,py312,coverage,mypy,pre-commit
 skip_missing_interpreters = true
 isolated_build = True
 
 [testenv]
-deps = .
+deps = .[test]
 commands =
-    python -m pip install --upgrade coverage pytest
-    coverage erase
-    coverage run -m pytest {posargs:tests}
-    coverage xml
-    coverage report --fail-under 95 --skip-covered --skip-empty -m
+    coverage run -p -m pytest tests/
+
+[testenv:coverage]
+depends = py37,py38,py39,py310,py311,py312
+parallel_show_output = true
+commands =
+    python -m coverage combine
+    python -m coverage report -m --fail-under=50
+    python -m coverage json
+
+[testenv:mypy]
+deps =
+    mypy
+commands =
+    mypy -p twitterapiv2 --no-incremental
 
 [testenv:pre-commit]
+depends = coverage
+parallel_show_output = true
 skip_install = true
 deps = pre-commit
 commands = pre-commit run --all-files --show-diff-on-failure

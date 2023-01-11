@@ -274,13 +274,13 @@ class UserTUIAuthClient:
         return UserOAuthResponse.from_resp_string(resp.text)
 
 
-if __name__ == "__main__":
-    from secretbox import SecretBox
+# if __name__ == "__main__":
+# from secretbox import SecretBox
 
-    logging.basicConfig(level="DEBUG")
-    box = SecretBox(auto_load=True, debug_flag=True)
-    client = UserTUIAuthClient()
-    result = client._request_user_permission()
+# logging.basicConfig(level="DEBUG")
+# box = SecretBox(auto_load=True, debug_flag=True)
+# client = UserTUIAuthClient()
+# result = client._request_user_permission()
 
-    client.authenticate()
-    print(client._user_auth)
+# client.authenticate()
+# print(client._user_auth)
