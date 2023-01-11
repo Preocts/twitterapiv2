@@ -1,9 +1,12 @@
 from __future__ import annotations
 
-from typing import Literal
+from typing import TYPE_CHECKING
 
 from twitterapiv2.client_core import ClientCore
 from twitterapiv2.model.tweet_count.tweet_count import TweetCount
+
+if TYPE_CHECKING:
+    from typing import Literal
 
 URL_RECENT = "https://api.twitter.com/2/tweets/counts/recent"
 URL_ALL = "https://api.twitter.com/2/tweets/counts/all"
