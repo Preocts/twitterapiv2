@@ -3,9 +3,12 @@ temp_*
 venv/
 *egg-info/
 .tox/
-coverage_html_report/
 .coverage
+.coverage.*
 coverage.xml
+coverage.json
+htmlcov/
 build/
 dist/
 __pycache__/
+.vscode/
