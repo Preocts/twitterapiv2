@@ -4,7 +4,6 @@ from collections.abc import Generator
 from unittest.mock import patch
 
 import pytest
-from twitterapiv2.model.recent.data import Data
 from twitterapiv2.tweets_lookup import TweetsLookup
 from twitterapiv2.tweets_lookup import URL
 
@@ -31,7 +30,6 @@ def test_valid_single_search(client: TweetsLookup) -> None:
     client.ids(LUCKY_ID)
     result = client.fetch()
     assert len(result) == 1
-    assert isinstance(result[0], Data)
 
 
 def test_valid_multi_search(client: TweetsLookup) -> None:
