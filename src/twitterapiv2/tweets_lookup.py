@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from twitterapiv2.client_core import ClientCore
-from twitterapiv2.model.recent.data import Data
+from twitterapiv2.model.recent import Data
 
 URL = "https://api.twitter.com/2/tweets"
 
@@ -36,5 +36,4 @@ class TweetsLookup(ClientCore):
         if not self.fields.get("ids"):
             raise ValueError(".ids() is a required field to be defined.")
         results = self.get(URL)
-        data = results.get("data") or []
-        return [Data.build_from(tweet) for tweet in data]
+        return results.get("data") or []

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from twitterapiv2.client_core import ClientCore
-from twitterapiv2.model.recent.recent import Recent
+from twitterapiv2.model.recent import Recent
 
 URL = "https://api.twitter.com/2/tweets/search/recent"
 
@@ -41,5 +41,4 @@ class SearchRecent(ClientCore):
         """
         if not self.fields.get("query"):
             raise ValueError(".query() is a required field to be defined.")
-
-        return Recent.build_from(self.get(URL))
+        return self.get(URL)  # type: ignore

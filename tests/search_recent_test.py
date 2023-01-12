@@ -4,7 +4,6 @@ from collections.abc import Generator
 from unittest.mock import patch
 
 import pytest
-from twitterapiv2.model.recent.recent import Recent
 from twitterapiv2.search_recent import SearchRecent
 from twitterapiv2.search_recent import URL
 
@@ -22,13 +21,13 @@ def client() -> Generator[SearchRecent, None, None]:
 
 
 def test_valid_search(client: SearchRecent) -> None:
+    # TODO: These are flagging as type errors in editor
     client.http.add_response(MOCK_RESP, HEADERS, 200, URL)
 
     client.max_results(10)
     client.query("hello")
     result = client.fetch()
-    assert isinstance(result, Recent)
-    assert result.data
+    assert result["data"]
 
 
 def test_query_required() -> None:
