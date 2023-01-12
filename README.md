@@ -1,119 +1,16 @@
-[![Python 3.7 | 3.8 | 3.9 | 3.10 | 3.11](https://img.shields.io/badge/Python-3.7%20%7C%203.8%20%7C%203.9%20%7C%203.10%20%7C%203.11-blue)](https://www.python.org/downloads)
+[![Python 3.8 | 3.9 | 3.10 | 3.11](https://img.shields.io/badge/Python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11-blue)](https://www.python.org/downloads)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/Preocts/twitterapiv2/main.svg)](https://results.pre-commit.ci/latest/github/Preocts/twitterapiv2/main)
 [![Python package](https://github.com/Preocts/twitterapiv2/actions/workflows/python-tests.yml/badge.svg?branch=main)](https://github.com/Preocts/twitterapiv2/actions/workflows/python-tests.yml)
 
-# twitterapiv2 - Custom API wrapper
+# twitterapiv2
 
 ### Requirements:
 
-- [Python>=3.7](https://www.python.org/)
+- [Python>=3.8](https://www.python.org/)
 - [httpx>=0.23.1](https://pypi.org/project/httpx)
-
-During a re-write of [this project](https://github.com/Preocts/twwordmap) I
-started writing a wrapper for the Twitter API v2. It was fun enough to create
-that now its a stand-alone project. We'll see how far this goes!
-
----
-
-## Authenticating with Twitter API v2 as an application
-
-The authentication client of included in the `twitterapiv2/` library requires
-your applications consumer credentials to be loaded in the environment variables
-before an authentication attempt is made. The consumer credentials are your
-client key and client secret as found in the application dashboard of the
-Twitter Dev panel.
-
-Create four environmental variables as follows:
-```env
-TW_CONSUMER_KEY=[client key]
-TW_CONSUMER_SECRET=[client secret]
-TW_ACCESS_TOKEN=[access key]
-TW_ACCESS_SECRET=[access secret]
-```
-
-A 'TW_BEARER_TOKEN' will be created in the environment on successful
-authentication. This key should be stored securely and loaded to the environment
-on subsequent calls. When this token already exists, the request for a bearer
-token can be skipped.
-
-Additional calls to the authentication process **will not** result in a new
-bearer token if the same consumer credentials are provided. The former bearer
-token must be invalided to obtain a new one.
-
-## SearchRecent provider
-
-The search client performs a "Search Recent" from the Twitter V2 API. This
-search is limited to seven days of history and has a large number of inner
-objects to select from. By default, the search only returns the `text` of the
-tweet and the `id` of the tweet.
-
-After declaring a base `SearchRecent()` the fields of the search query can be
-set using the builder methods. When executing a `.fetch()` the `page_token` is
-automatically set to the next results. Checking the `.more` property after the
-first `.fetch()` will indicate if more results remain. Fetch loops should stop
-when `.more` is `False`.
-
-Rate limiting must be handled outside of the library.
-`SearchRecent.limit_remaining` will be an `int` representing the number of API
-calls remaining for requests are refused. `SearchRecent.limit_reset` is an
-unaware UTC `datetime` object of the next reset time (typically 15 minutes). If
-a search has not been invoked the `.limit_remaining` will default to `-1` and
-`limit_reset` to `.utcnow()`.
-
-**NOTE**: The search recent endpoint is a monthly rate limited endpoint. Be sure
-to test the expected result counts of your queries and see the Twitter
-development dashboard for updated requests remaining.
-
-Full API details:
-
-https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-recent#Default
-
-Use example:
-```py
-from datetime import datetime
-from time import sleep
-
-from secretbox import SecretBox
-from twitterapiv2.auth_client import AuthClient
-from twitterapiv2.exceptions import InvalidResponseError
-from twitterapiv2.exceptions import ThrottledError
-from twitterapiv2.search_recent import SearchRecent
-
-
-SecretBox(auto_load=True)
-
-auth = AuthClient()
-auth.set_bearer_token()
-
-mysearch = SearchRecent()
-mysearch.start_time("2021-11-23T00:00:00Z")
-mysearch.expansions("author_id,attachments.poll_ids")
-mysearch.max_results(10)
-mysearch.query("#100DaysOfCode -is:retweet")
-
-while True:
-    print("Retrieving Tweets...")
-    try:
-        response = mysearch.fetch()
-    except InvalidResponseError as err:
-        print(f"Invalid response from HTTP: '{err}'")
-        break
-    except ThrottledError:
-        print(f"Rate limit reached, resets at: {mysearch.limit_reset} UTC")
-        while datetime.utcnow() <= mysearch.limit_reset:
-            print(f"Waiting for limit reset, currently: {datetime.utcnow()} UTC...")
-            sleep(60)
-        continue
-
-    # Do something with pulled data in response
-
-    if not mysearch.more:
-        print("No additional pages to poll.")
-        break
-```
 
 ---
 
