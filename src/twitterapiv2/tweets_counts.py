@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from twitterapiv2.client_core import ClientCore
-from twitterapiv2.model.tweet_count.tweet_count import TweetCount
+from twitterapiv2.model.tweet_count import TweetCount
 
 if TYPE_CHECKING:
     from typing import Literal
@@ -48,4 +48,4 @@ class TweetsCounts(ClientCore):
         if not self.fields.get("query"):
             raise ValueError(".query() is a required field to be defined.")
 
-        return TweetCount.build_from(self.get(self._url))
+        return self.get(self._url)  # type: ignore
