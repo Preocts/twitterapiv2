@@ -5,7 +5,6 @@ from collections.abc import Generator
 from unittest.mock import patch
 
 import pytest
-from twitterapiv2.model.tweet_count.tweet_count import TweetCount
 from twitterapiv2.tweets_counts import TweetsCounts
 from twitterapiv2.tweets_counts import URL_RECENT
 
@@ -42,8 +41,7 @@ def test_valid_count(client: TweetsCounts) -> None:
     client.query("hello")
 
     result = client.fetch()
-    assert isinstance(result, TweetCount)
-    assert result.meta.total_tweet_count
+    assert result["meta"]["total_tweet_count"]
     assert not client.more
 
 
