@@ -74,3 +74,11 @@ def test_get_bearer_token_with_existing(client: AppAuthClient) -> None:
     result = client._get_bearer_token()
 
     assert result == "mock"
+
+
+def test_revoke_bearer_token(client: AppAuthClient) -> None:
+    client._keys.consumer_bearer = "mock"
+
+    client.revoke_bearer_token()
+
+    assert client.consumer_bearer is None

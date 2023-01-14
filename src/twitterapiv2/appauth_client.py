@@ -71,9 +71,14 @@ class AppAuthClient:
         self._keys.consumer_bearer = result["access_token"]
         return result["access_token"]
 
-    # def revoke_bearer_token(self) -> None:
-    #     """Revoke and delete token in `TW_BEARER_TOKEN` environ variable"""
-    #     raise NotImplementedError("Twitter functionality missing. Use the dashboard!")
+    def revoke_bearer_token(self) -> None:
+        """
+        Revoke current bearer token.
+
+        NOTE: This only attempts to recreate a bearer on the next auth call.
+        """
+        self._keys.consumer_bearer = None
+
     #     token = os.getenv("TW_BEARER_TOKEN")
     #     if not token:
     #         raise ValueError(f"No bearer token loaded: TW_BEARER_TOKEN={token}")
