@@ -1,21 +1,17 @@
 from __future__ import annotations
 
+from twitterapiv2.appauth_client import AppAuthClient
 from twitterapiv2.client_core import ClientCore
+from twitterapiv2.model.application_auth import ApplicationAuth
 from twitterapiv2.model.recent import Data
 
 URL = "https://api.twitter.com/2/tweets"
 
 
 class TweetsLookup(ClientCore):
-    def __init__(self) -> None:
-        """
-        Return information about Tweet(s) specified by requested ID(s).
-
-        The environment variable "TW_BEARER_TOKEN" is required; define with the
-        applicaton bearer token. This can be defined manually or loaded with the
-        use of AuthClient.set_bearer_token().
-        """
-        super().__init__()
+    def __init__(self, application_auth: ApplicationAuth) -> None:
+        """Lookup information about Tweet(s) specified by requested ID(s)."""
+        super().__init__(AppAuthClient(application_auth))
 
         # Define field builder methods
         self.expansions = self.field_builder.expansions
