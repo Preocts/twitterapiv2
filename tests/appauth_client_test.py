@@ -43,13 +43,12 @@ def test_required_applicationauth_secret(client: AppAuthClient) -> None:
         client._encoded_credentials()
 
 
-def test_get_bearer_token(client: AppAuthClient) -> None:
+def test_get_consumer_bearer(client: AppAuthClient) -> None:
     client.http.add_response(MOCK_RESP, {}, 200, client.twitter_api + "/oauth2/token")
 
-    result = client._get_bearer_token()
+    result = client.get_consumer_bearer()
 
     assert result == MOCK_BEARER
-    assert client.consumer_bearer == MOCK_BEARER
 
 
 def test_invalid_bearer_request(client: AppAuthClient) -> None:
@@ -68,10 +67,10 @@ def test_invalid_bearer_response(client: AppAuthClient) -> None:
         client._get_bearer_token()
 
 
-def test_get_bearer_token_with_existing(client: AppAuthClient) -> None:
+def test_get_consumer_bearer_when_exists(client: AppAuthClient) -> None:
     client._keys.consumer_bearer = "mock"
 
-    result = client._get_bearer_token()
+    result = client.get_consumer_bearer()
 
     assert result == "mock"
 
@@ -81,4 +80,4 @@ def test_revoke_bearer_token(client: AppAuthClient) -> None:
 
     client.revoke_bearer_token()
 
-    assert client.consumer_bearer is None
+    assert client._keys.consumer_bearer is None
