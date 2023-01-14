@@ -37,4 +37,4 @@ class SearchRecent(ClientCore):
         """
         if not self.fields.get("query"):
             raise ValueError(".query() is a required field to be defined.")
-        return self.get(URL)  # type: ignore
+        return self.get(URL)

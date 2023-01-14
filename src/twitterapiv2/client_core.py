@@ -52,7 +52,7 @@ class ClientCore:
         """Build headers with TW_BEARER_TOKEN from environ."""
         return {"Authorization": f"Bearer {self.auth_client.get_consumer_bearer()}"}
 
-    def get(self, url: str) -> dict[str, Any]:
+    def get(self, url: str) -> Any:
         """
         Send GET request to url with defined fields encoded into URL.
 
@@ -60,7 +60,7 @@ class ClientCore:
             url: Target Twitter API URL
 
         Returns:
-            JSON response as dict[str, Any]
+            JSON response as Any
         """
         self._last_response = self.http.get(
             url=url,

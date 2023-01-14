@@ -48,4 +48,4 @@ class TweetsCounts(ClientCore):
         if not self.fields.get("query"):
             raise ValueError(".query() is a required field to be defined.")
 
-        return self.get(self._url)  # type: ignore
+        return self.get(self._url)
