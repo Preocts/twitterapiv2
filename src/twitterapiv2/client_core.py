@@ -1,24 +1,22 @@
 """Core class inherited by client classes."""
 from __future__ import annotations
 
-import os
 from datetime import datetime
 from typing import Any
 
 import httpx
+from twitterapiv2.appauth_client import AppAuthClient
 from twitterapiv2.exceptions import InvalidResponseError
 from twitterapiv2.exceptions import ThrottledError
 from twitterapiv2.fields import Fields
 
 
-_BEARER_TOKEN = "TW_BEARER_TOKEN"
-
-
 class ClientCore:
-    def __init__(self) -> None:
+    def __init__(self, auth_client: AppAuthClient) -> None:
         """Define a ClientCore, contains `.field_builder()` and http client."""
-        self.field_builder = Fields()
         self.http = httpx.Client()
+        self.field_builder = Fields()
+        self.auth_client = auth_client
         self._last_response: httpx.Response | None = None
         self._next_token: str | None = None
 
@@ -52,7 +50,7 @@ class ClientCore:
     @property
     def headers(self) -> dict[str, str]:
         """Build headers with TW_BEARER_TOKEN from environ."""
-        return {"Authorization": "Bearer " + os.getenv(_BEARER_TOKEN, "")}
+        return {"Authorization": f"Bearer {self.auth_client.get_consumer_bearer()}"}
 
     def get(self, url: str) -> dict[str, Any]:
         """

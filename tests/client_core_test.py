@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from unittest.mock import MagicMock
 
 import pytest
 from httpx import Response
@@ -33,14 +34,18 @@ HEADERS = {
 MOCK_RESPONSE = Response(200, content=BODY, headers=HEADERS)
 
 
-def test_default_values() -> None:
-    client = ClientCore()
+@pytest.fixture
+def client() -> ClientCore:
+    auth_mock = MagicMock(get_consumer_bearer=MagicMock(return_value="mock_bearer"))
+    return ClientCore(auth_mock)
+
+
+def test_default_values(client: ClientCore) -> None:
     assert client.limit_remaining == -1
     assert client.limit_reset is not None
 
 
-def test_properties() -> None:
-    client = ClientCore()
+def test_properties(client: ClientCore) -> None:
     expected_remaining = MOCK_RESPONSE.headers["x-rate-limit-remaining"]
     reset = MOCK_RESPONSE.headers["x-rate-limit-reset"]
     expected_reset = datetime.utcfromtimestamp(int(reset))
@@ -50,15 +55,13 @@ def test_properties() -> None:
     assert client.limit_reset == expected_reset
 
 
-def test_more() -> None:
-    client = ClientCore()
+def test_more(client: ClientCore) -> None:
     assert not client.more
     client._next_token = "not null"
     assert client.more
 
 
-def test_fields() -> None:
-    client = ClientCore()
+def test_fields(client: ClientCore) -> None:
     assert not len(client.fields)
 
     client.field_builder._fields = {
@@ -70,34 +73,29 @@ def test_fields() -> None:
     assert "Invalid" not in client.fields
 
 
-def test_fetch_not_implemented() -> None:
-    client = ClientCore()
+def test_fetch_not_implemented(client: ClientCore) -> None:
     with pytest.raises(NotImplementedError):
         client.fetch()
 
 
-def test_response_handling_429() -> None:
+def test_response_handling_429(client: ClientCore) -> None:
     mock_resp = Response(429, headers=HEADERS)
-    client = ClientCore()
     with pytest.raises(ThrottledError):
         client.raise_on_response("https://", mock_resp)
 
 
-def test_response_handling_401() -> None:
+def test_response_handling_401(client: ClientCore) -> None:
     mock_resp = Response(401, headers=HEADERS)
-    client = ClientCore()
     with pytest.raises(InvalidResponseError):
         client.raise_on_response("https://", mock_resp)
 
 
-def test_response_handling_invalid() -> None:
+def test_response_handling_invalid(client: ClientCore) -> None:
     mock_resp = Response(42, headers=HEADERS)
-    client = ClientCore()
     with pytest.raises(InvalidResponseError):
         client.raise_on_response("https://", mock_resp)
 
 
-def test_response_handing_200() -> None:
+def test_response_handing_200(client: ClientCore) -> None:
     mock_resp = Response(200, headers=HEADERS)
-    client = ClientCore()
     client.raise_on_response("https://", mock_resp)
