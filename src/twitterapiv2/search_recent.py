@@ -1,21 +1,17 @@
 from __future__ import annotations
 
+from twitterapiv2.appauth_client import AppAuthClient
 from twitterapiv2.client_core import ClientCore
+from twitterapiv2.model.application_auth import ApplicationAuth
 from twitterapiv2.model.recent import Recent
 
 URL = "https://api.twitter.com/2/tweets/search/recent"
 
 
 class SearchRecent(ClientCore):
-    def __init__(self) -> None:
-        """
-        Create Search Recent client. Use methods to build query and .fetch() to run
-
-        The environment variable "TW_BEARER_TOKEN" is required; define with the
-        applicaton bearer token. This can be defined manually or loaded with the
-        use of AuthClient.set_bearer_token().
-        """
-        super().__init__()
+    def __init__(self, application_auth: ApplicationAuth) -> None:
+        """Search Recent client. Use methods to build query and .fetch() to run."""
+        super().__init__(AppAuthClient(application_auth))
 
         # Define field builder methods
         self.start_time = self.field_builder.start_time
@@ -41,4 +37,4 @@ class SearchRecent(ClientCore):
         """
         if not self.fields.get("query"):
             raise ValueError(".query() is a required field to be defined.")
-        return self.get(URL)  # type: ignore
+        return self.get(URL)

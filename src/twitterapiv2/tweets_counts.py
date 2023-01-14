@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from twitterapiv2.appauth_client import AppAuthClient
 from twitterapiv2.client_core import ClientCore
+from twitterapiv2.model.application_auth import ApplicationAuth
 from twitterapiv2.model.tweet_count import TweetCount
 
 if TYPE_CHECKING:
@@ -15,18 +17,16 @@ URL_ALL = "https://api.twitter.com/2/tweets/counts/all"
 class TweetsCounts(ClientCore):
     def __init__(
         self,
+        application_auth: ApplicationAuth,
+        *,
         end_point: Literal["recent", "all"] = "recent",
     ) -> None:
         """
         Create Tweets Counts client. Use methods to build query and .fetch() to run
 
         end_point allows use of `/counts/all` endpoint for Academic Research access
-
-        The environment variable "TW_BEARER_TOKEN" is required; define with the
-        applicaton bearer token. This can be defined manually or loaded with the
-        use of AuthClient.set_bearer_token().
         """
-        super().__init__()
+        super().__init__(AppAuthClient(application_auth))
         self._url = URL_ALL if end_point == "all" else URL_RECENT
 
         # Define builder methods
@@ -48,4 +48,4 @@ class TweetsCounts(ClientCore):
         if not self.fields.get("query"):
             raise ValueError(".query() is a required field to be defined.")
 
-        return self.get(self._url)  # type: ignore
+        return self.get(self._url)

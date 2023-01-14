@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Generator
+from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import pytest
@@ -30,7 +31,7 @@ MOCK_BODY = {
 
 @pytest.fixture
 def client() -> Generator[TweetsCounts, None, None]:
-    tweetclient = TweetsCounts()
+    tweetclient = TweetsCounts(MagicMock())
     with patch.object(tweetclient, "http", ClientMocker()):
         yield tweetclient
 
@@ -45,7 +46,7 @@ def test_valid_count(client: TweetsCounts) -> None:
     assert not client.more
 
 
-def test_query_required() -> None:
-    client = TweetsCounts()
+def test_query_field_is_required() -> None:
+    client = TweetsCounts(MagicMock())
     with pytest.raises(ValueError):
         client.fetch()

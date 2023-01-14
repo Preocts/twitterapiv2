@@ -35,9 +35,10 @@ class AppAuthClient:
         """Loaded consumer secret."""
         return self._keys.consumer_secret
 
-    @property
-    def consumer_bearer(self) -> str | None:
-        """Aquired bearer token, if any. Can be reused until revoked."""
+    def get_consumer_bearer(self) -> str | None:
+        """Aquire bearer token, or return current. Can be reused until revoked."""
+        if not self._keys.consumer_bearer:
+            self._get_bearer_token()
         return self._keys.consumer_bearer
 
     def _encoded_credentials(self) -> str:
@@ -50,14 +51,11 @@ class AppAuthClient:
         union = ":".join([key, secret]).encode()
         return b64encode(union).decode()
 
-    def _get_bearer_token(self) -> str:
+    def _get_bearer_token(self) -> None:
         """Get bearer token for Twitter API v2, uses provided if exists."""
         # Twitter does not frequently auto-expire bearer tokens. This will not
         # return a new (changed) bearer once one is granted until that token
         # is revoked.
-        if self.consumer_bearer:
-            return self.consumer_bearer
-
         self.logger.debug("Requesting bearer token with consumer credentials")
         url = self.twitter_api + "/oauth2/token"
         fields = {"grant_type": "client_credentials"}
@@ -69,7 +67,6 @@ class AppAuthClient:
             raise ValueError("Unexpected Authentication response.")
 
         self._keys.consumer_bearer = result["access_token"]
-        return result["access_token"]
 
     def revoke_bearer_token(self) -> None:
         """

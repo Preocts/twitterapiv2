@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Generator
+from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import pytest
@@ -15,7 +16,7 @@ MOCK_RESP = '{"data":[{"id":"1461880347478528007","text":"RT @forlalisa_th: Hell
 
 @pytest.fixture
 def client() -> Generator[SearchRecent, None, None]:
-    search_client = SearchRecent()
+    search_client = SearchRecent(MagicMock())
     with patch.object(search_client, "http", ClientMocker()):
         yield search_client
 
@@ -31,6 +32,6 @@ def test_valid_search(client: SearchRecent) -> None:
 
 
 def test_query_required() -> None:
-    client = SearchRecent()
+    client = SearchRecent(MagicMock())
     with pytest.raises(ValueError):
         client.fetch()

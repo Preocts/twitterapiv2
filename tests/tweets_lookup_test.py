@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Generator
+from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import pytest
@@ -19,7 +20,7 @@ MULTI_SEARCH = b'{"data":[{"id":"1461880347478528007","text":"RT Hello"},{"id":"
 
 @pytest.fixture
 def client() -> Generator[TweetsLookup, None, None]:
-    tweetclient = TweetsLookup()
+    tweetclient = TweetsLookup(MagicMock())
     with patch.object(tweetclient, "http", ClientMocker()):
         yield tweetclient
 
@@ -41,6 +42,6 @@ def test_valid_multi_search(client: TweetsLookup) -> None:
 
 
 def test_id_required() -> None:
-    client = TweetsLookup()
+    client = TweetsLookup(MagicMock())
     with pytest.raises(ValueError):
         client.fetch()
