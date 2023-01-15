@@ -10,6 +10,7 @@ class ClientAuth:
 
     client_id: str
     client_secret: str | None
+    redirect_uri: str | None
 
     @classmethod
     def from_environ(cls) -> ClientAuth:
@@ -19,8 +20,10 @@ class ClientAuth:
         Environments Variables:
             TW_CLIENT_ID: required
             TW_CLIENT_SECRET: optional (confidential versus public auth)
+            TW_REDIRECT_URL: optional (default: https://127.0.0.1)
         """
         return cls(
             client_id=os.environ["TW_CLIENT_ID"],
             client_secret=os.environ.get("TW_CLIENT_SECRET"),
+            redirect_uri=os.environ.get("TW_REDIRECT_URI", "https://127.0.0.1"),
         )
