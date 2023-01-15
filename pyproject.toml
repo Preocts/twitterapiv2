@@ -21,7 +21,8 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: CPython"
 ]
 dependencies = [
-    "httpx>=0.23.1"
+    "httpx>=0.23.1",
+    "Authlib>=1.2.0",
 ]
 
 [project.optional-dependencies]
