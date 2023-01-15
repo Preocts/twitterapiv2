@@ -11,7 +11,7 @@ import logging
 import os
 import re
 
-from authlib.integrations.httpx_client import OAuth2Client
+from authlib.integrations.httpx_client import OAuth2Client  # type: ignore  # no stubs
 from twitterapiv2.model.client_auth import ClientAuth
 
 TWITTER_AUTH = "https://twitter.com/i/oauth2/authorize"
