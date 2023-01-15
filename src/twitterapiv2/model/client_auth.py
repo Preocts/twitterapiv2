@@ -9,7 +9,7 @@ class ClientAuth:
     """Authentication keys for client OAuth2 authorization."""
 
     client_id: str
-    client_secret: str
+    client_secret: str | None
 
     @classmethod
     def from_environ(cls) -> ClientAuth:
@@ -18,9 +18,9 @@ class ClientAuth:
 
         Environments Variables:
             TW_CLIENT_ID: required
-            TW_CLIENT_SECRET: required
+            TW_CLIENT_SECRET: optional (confidential versus public auth)
         """
         return cls(
             client_id=os.environ["TW_CLIENT_ID"],
-            client_secret=os.environ["TW_CLIENT_SECRET"],
+            client_secret=os.environ.get("TW_CLIENT_SECRET"),
         )
