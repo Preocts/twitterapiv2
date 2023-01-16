@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from twitterapiv2.appauth_client import AppAuthClient
+from twitterapiv2._appauth_client import AppAuthClient
 from twitterapiv2.client_core import ClientCore
 from twitterapiv2.model.application_auth import ApplicationAuth
 from twitterapiv2.model.tweet_count import TweetCount

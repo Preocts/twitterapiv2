@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from twitterapiv2.appauth_client import AppAuthClient
+from twitterapiv2._appauth_client import AppAuthClient
 from twitterapiv2.client_core import ClientCore
 from twitterapiv2.model.application_auth import ApplicationAuth
 from twitterapiv2.model.recent import Recent

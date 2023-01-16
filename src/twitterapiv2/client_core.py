@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Any
 
 import httpx
-from twitterapiv2.appauth_client import AppAuthClient
+from twitterapiv2._appauth_client import AppAuthClient
 from twitterapiv2.exceptions import InvalidResponseError
 from twitterapiv2.exceptions import ThrottledError
 from twitterapiv2.fields import Fields
