@@ -50,7 +50,7 @@ class ClientCore:
     @property
     def headers(self) -> dict[str, str]:
         """Build headers with TW_BEARER_TOKEN from environ."""
-        return {"Authorization": f"Bearer {self.auth_client.get_consumer_bearer()}"}
+        return {"Authorization": f"Bearer {self.auth_client.get_bearer()}"}
 
     def get(self, url: str) -> Any:
         """

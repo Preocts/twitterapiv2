@@ -44,7 +44,7 @@ def test_get_consumer_bearer(client: AppAuthClient) -> None:
     with patch.object(client, "http", HttpMocker()) as mock_http:
         mock_http.add_response(MOCK_RESP, {}, 200, client.twitter_api + "/oauth2/token")
 
-        result = client.get_consumer_bearer()
+        result = client.get_bearer()
 
         assert result == MOCK_BEARER
 
@@ -72,14 +72,6 @@ def test_invalid_bearer_response(client: AppAuthClient) -> None:
 def test_get_consumer_bearer_when_exists(client: AppAuthClient) -> None:
     client._keys.consumer_bearer = "mock"
 
-    result = client.get_consumer_bearer()
+    result = client.get_bearer()
 
     assert result == "mock"
-
-
-def test_revoke_bearer_token(client: AppAuthClient) -> None:
-    client._keys.consumer_bearer = "mock"
-
-    client.revoke_bearer_token()
-
-    assert client._keys.consumer_bearer is None

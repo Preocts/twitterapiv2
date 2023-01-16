@@ -26,17 +26,7 @@ class AppAuthClient(AuthClient):
         self.http = httpx.Client()
         self._keys = authentication_keys
 
-    @property
-    def consumer_key(self) -> str:
-        """Loaded consumer key."""
-        return self._keys.consumer_key
-
-    @property
-    def consumer_secret(self) -> str:
-        """Loaded consumer secret."""
-        return self._keys.consumer_secret
-
-    def get_consumer_bearer(self) -> str | None:
+    def get_bearer(self) -> str | None:
         """Aquire bearer token, or return current. Can be reused until revoked."""
         if not self._keys.consumer_bearer:
             self._get_bearer_token()
@@ -44,11 +34,11 @@ class AppAuthClient(AuthClient):
 
     def _encoded_credentials(self) -> str:
         """Create encoded token credential string."""
-        if not self.consumer_key or not self.consumer_secret:
+        if not self._keys.consumer_key or not self._keys.consumer_secret:
             raise KeyError("Missing one or both consumer environment variables!")
 
-        key = parse.quote_plus(self.consumer_key)
-        secret = parse.quote_plus(self.consumer_secret)
+        key = parse.quote_plus(self._keys.consumer_key)
+        secret = parse.quote_plus(self._keys.consumer_secret)
         union = ":".join([key, secret]).encode()
         return b64encode(union).decode()
 
@@ -68,26 +58,6 @@ class AppAuthClient(AuthClient):
             raise ValueError("Unexpected Authentication response.")
 
         self._keys.consumer_bearer = result["access_token"]
-
-    def revoke_bearer_token(self) -> None:
-        """
-        Revoke current bearer token.
-
-        NOTE: This only attempts to recreate a bearer on the next auth call.
-        """
-        self._keys.consumer_bearer = None
-
-    #     token = os.getenv("TW_BEARER_TOKEN")
-    #     if not token:
-    #         raise ValueError(f"No bearer token loaded: TW_BEARER_TOKEN={token}")
-
-    #     url = self.TWITTER_API + "/oauth2/invalidate_token"
-    #     fields = {"access_token": token}
-    #     result = self._post_request(url=url, fields=fields)
-
-    #     if "access_token" not in result or result.get("access_token") != token:
-    #         self.log.error("Unexpected response: '%s'", result)
-    #         raise ValueError("Unexpected response! Token may still be active.")
 
     def _post_request(self, url: str, fields: dict[str, str]) -> dict[str, Any]:
         """Internal use: makes validate and invalidate calls, returns result"""
