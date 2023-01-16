@@ -12,13 +12,19 @@ import os
 import re
 
 from authlib.integrations.httpx_client import OAuth2Client  # type: ignore  # no stubs
+from twitterapiv2._auth_client import AuthClient
 from twitterapiv2.model.client_auth import ClientAuth
 
 TWITTER_AUTH = "https://twitter.com/i/oauth2/authorize"
 TWITTER_TOKEN = "https://api.twitter.com/2/oauth2/token"
 
+# TODO:
+#   track expiry on bearer token
+#   handle reauth request
+#   handle revoke request
 
-class UserAuthClient:
+
+class UserAuthClient(AuthClient):
 
     logger = logging.getLogger(__name__)
 
@@ -29,7 +35,7 @@ class UserAuthClient:
         self._bearer: str | None = None
 
     def get_bearer(self) -> str | None:
-        """Aquire bearer token, or return current. Can be reused until revoked."""
+        """Aquire bearer token, or return current."""
         if not self._bearer:
             self._get_bearer_token()
         return self._bearer

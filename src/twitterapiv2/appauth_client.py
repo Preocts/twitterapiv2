@@ -11,10 +11,11 @@ from typing import Any
 from urllib import parse
 
 import httpx
+from twitterapiv2._auth_client import AuthClient
 from twitterapiv2.model.application_auth import ApplicationAuth
 
 
-class AppAuthClient:
+class AppAuthClient(AuthClient):
 
     logger = logging.getLogger(__name__)
 
