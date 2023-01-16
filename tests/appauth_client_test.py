@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-from collections.abc import Generator
 from unittest.mock import patch
 
 import pytest
 from twitterapiv2.appauth_client import AppAuthClient
 from twitterapiv2.model.application_auth import ApplicationAuth
 
-from tests.fixtures.clientmocker import ClientMocker
+from tests.fixtures.httpmocker import HttpMocker
 
 MOCK_KEY = "xvz1evFS4wEEPTGEFPHBog"
 MOCK_SECRET = "L8qq9PZyRg6ieKGEKhZolGC0vJWLw8iEJ88DRdyOg"
@@ -20,10 +19,8 @@ BAD_RESPONSE = '{"token_type":"bearer"}'
 
 
 @pytest.fixture
-def client() -> Generator[AppAuthClient, None, None]:
-    appclient = AppAuthClient(ApplicationAuth(MOCK_KEY, MOCK_SECRET))
-    with patch.object(appclient, "http", ClientMocker()):
-        yield appclient
+def client() -> AppAuthClient:
+    return AppAuthClient(ApplicationAuth(MOCK_KEY, MOCK_SECRET))
 
 
 def test_encoded_credentials(client: AppAuthClient) -> None:
@@ -44,27 +41,32 @@ def test_required_applicationauth_secret(client: AppAuthClient) -> None:
 
 
 def test_get_consumer_bearer(client: AppAuthClient) -> None:
-    client.http.add_response(MOCK_RESP, {}, 200, client.twitter_api + "/oauth2/token")
+    with patch.object(client, "http", HttpMocker()) as mock_http:
+        mock_http.add_response(MOCK_RESP, {}, 200, client.twitter_api + "/oauth2/token")
 
-    result = client.get_consumer_bearer()
+        result = client.get_consumer_bearer()
 
-    assert result == MOCK_BEARER
+        assert result == MOCK_BEARER
 
 
 def test_invalid_bearer_request(client: AppAuthClient) -> None:
-    client.http.add_response(BAD_REQUEST, {}, 403, client.twitter_api + "/oauth2/token")
+    with patch.object(client, "http", HttpMocker()) as mock_http:
+        mock_http.add_response(
+            BAD_REQUEST, {}, 403, client.twitter_api + "/oauth2/token"
+        )
 
-    with pytest.raises(ValueError):
-        client._get_bearer_token()
+        with pytest.raises(ValueError):
+            client._get_bearer_token()
 
 
 def test_invalid_bearer_response(client: AppAuthClient) -> None:
-    client.http.add_response(
-        BAD_RESPONSE, {}, 200, client.twitter_api + "/oauth2/token"
-    )
+    with patch.object(client, "http", HttpMocker()) as mock_http:
+        mock_http.add_response(
+            BAD_RESPONSE, {}, 200, client.twitter_api + "/oauth2/token"
+        )
 
-    with pytest.raises(ValueError):
-        client._get_bearer_token()
+        with pytest.raises(ValueError):
+            client._get_bearer_token()
 
 
 def test_get_consumer_bearer_when_exists(client: AppAuthClient) -> None:
