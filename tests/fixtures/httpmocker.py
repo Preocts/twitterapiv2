@@ -5,14 +5,14 @@ from typing import Any
 from httpx import Response
 
 
-class ClientMocker:
+class HttpMocker:
     def __init__(self) -> None:
         self._urls: list[str] = []
         self._responses: list[Response] = []
 
     def add_response(
         self,
-        content: str,
+        content: str | bytes,
         headers: dict[str, str],
         status_code: int,
         url: str,

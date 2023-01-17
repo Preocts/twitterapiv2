@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Generator
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
@@ -8,7 +7,7 @@ import pytest
 from twitterapiv2.tweets_lookup import TweetsLookup
 from twitterapiv2.tweets_lookup import URL
 
-from tests.fixtures.clientmocker import ClientMocker
+from tests.fixtures.httpmocker import HttpMocker
 from tests.fixtures.mock_headers import HEADERS
 
 LUCKY_ID = "1461880347478528007"
@@ -19,29 +18,28 @@ MULTI_SEARCH = b'{"data":[{"id":"1461880347478528007","text":"RT Hello"},{"id":"
 
 
 @pytest.fixture
-def client() -> Generator[TweetsLookup, None, None]:
-    tweetclient = TweetsLookup(MagicMock())
-    with patch.object(tweetclient, "http", ClientMocker()):
-        yield tweetclient
+def client() -> TweetsLookup:
+    return TweetsLookup(MagicMock())
 
 
 def test_valid_single_search(client: TweetsLookup) -> None:
-    client.http.add_response(SINGLE_SEARCH, HEADERS, 200, URL)
+    with patch.object(client, "http", HttpMocker()) as mock_http:
+        mock_http.add_response(SINGLE_SEARCH, HEADERS, 200, URL)
 
-    client.ids(LUCKY_ID)
-    result = client.fetch()
-    assert len(result) == 1
+        client.ids(LUCKY_ID)
+        result = client.fetch()
+        assert len(result) == 1
 
 
 def test_valid_multi_search(client: TweetsLookup) -> None:
-    client.http.add_response(MULTI_SEARCH, HEADERS, 200, URL)
+    with patch.object(client, "http", HttpMocker()) as mock_http:
+        mock_http.add_response(MULTI_SEARCH, HEADERS, 200, URL)
 
-    client.ids(LUCKY_IDS)
-    result = client.fetch()
-    assert len(result) == 2
+        client.ids(LUCKY_IDS)
+        result = client.fetch()
+        assert len(result) == 2
 
 
-def test_id_required() -> None:
-    client = TweetsLookup(MagicMock())
+def test_id_required(client: TweetsLookup) -> None:
     with pytest.raises(ValueError):
         client.fetch()

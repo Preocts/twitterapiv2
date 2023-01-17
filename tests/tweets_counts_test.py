@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-from collections.abc import Generator
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
@@ -9,7 +8,7 @@ import pytest
 from twitterapiv2.tweets_counts import TweetsCounts
 from twitterapiv2.tweets_counts import URL_RECENT
 
-from tests.fixtures.clientmocker import ClientMocker
+from tests.fixtures.httpmocker import HttpMocker
 from tests.fixtures.mock_headers import HEADERS
 
 MOCK_BODY = {
@@ -30,23 +29,21 @@ MOCK_BODY = {
 
 
 @pytest.fixture
-def client() -> Generator[TweetsCounts, None, None]:
-    tweetclient = TweetsCounts(MagicMock())
-    with patch.object(tweetclient, "http", ClientMocker()):
-        yield tweetclient
+def client() -> TweetsCounts:
+    return TweetsCounts(MagicMock())
 
 
 def test_valid_count(client: TweetsCounts) -> None:
-    client.http.add_response(json.dumps(MOCK_BODY), HEADERS, 200, URL_RECENT)
+    with patch.object(client, "http", HttpMocker()) as mock_http:
+        mock_http.add_response(json.dumps(MOCK_BODY), HEADERS, 200, URL_RECENT)
 
-    client.query("hello")
+        client.query("hello")
 
-    result = client.fetch()
-    assert result["meta"]["total_tweet_count"]
-    assert not client.more
+        result = client.fetch()
+        assert result["meta"]["total_tweet_count"]
+        assert not client.more
 
 
-def test_query_field_is_required() -> None:
-    client = TweetsCounts(MagicMock())
+def test_query_field_is_required(client: TweetsCounts) -> None:
     with pytest.raises(ValueError):
         client.fetch()

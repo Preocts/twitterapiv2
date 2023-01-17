@@ -5,20 +5,36 @@ from datetime import datetime
 from typing import Any
 
 import httpx
-from twitterapiv2.appauth_client import AppAuthClient
+from twitterapiv2._appauth_client import AppAuthClient
+from twitterapiv2._auth_client import AuthClient
+from twitterapiv2._userauth_client import UserAuthClient
 from twitterapiv2.exceptions import InvalidResponseError
 from twitterapiv2.exceptions import ThrottledError
 from twitterapiv2.fields import Fields
+from twitterapiv2.model.application_auth import ApplicationAuth
+from twitterapiv2.model.client_auth import ClientAuth
 
 
 class ClientCore:
-    def __init__(self, auth_client: AppAuthClient) -> None:
+    scopes: list[str] = []
+
+    def __init__(self, auth_client: AuthClient) -> None:
         """Define a ClientCore, contains `.field_builder()` and http client."""
         self.http = httpx.Client()
         self.field_builder = Fields()
         self.auth_client = auth_client
         self._last_response: httpx.Response | None = None
         self._next_token: str | None = None
+
+    @classmethod
+    def from_model(cls, auth_model: ApplicationAuth | ClientAuth) -> ClientCore:
+        """Build with auth client respective of auth model provided."""
+        if isinstance(auth_model, ApplicationAuth):
+            return cls(AppAuthClient(auth_model, ClientCore.scopes))
+        elif isinstance(auth_model, ClientAuth):
+            return cls(UserAuthClient(auth_model, ClientCore.scopes))
+        else:
+            raise ValueError(f"Unknown auth model type: {type(auth_model).__name__}")
 
     @property
     def limit_remaining(self) -> int:
@@ -50,7 +66,7 @@ class ClientCore:
     @property
     def headers(self) -> dict[str, str]:
         """Build headers with TW_BEARER_TOKEN from environ."""
-        return {"Authorization": f"Bearer {self.auth_client.get_consumer_bearer()}"}
+        return {"Authorization": f"Bearer {self.auth_client.get_bearer()}"}
 
     def get(self, url: str) -> Any:
         """

@@ -3,29 +3,33 @@ from __future__ import annotations
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
+import pytest
 from twitterapiv2._userauth_client import TWITTER_AUTH
 from twitterapiv2._userauth_client import TWITTER_TOKEN
 from twitterapiv2._userauth_client import UserAuthClient
 from twitterapiv2.model.client_auth import ClientAuth
 
 
-def test__code_verifier() -> None:
-    result = UserAuthClient._code_verifier()
+@pytest.fixture
+def client() -> UserAuthClient:
+    return UserAuthClient(MagicMock(), [])
+
+
+def test__code_verifier(client: UserAuthClient) -> None:
+    result = client._code_verifier()
 
     assert isinstance(result, str)
 
 
-def test__code_challenge() -> None:
+def test__code_challenge(client: UserAuthClient) -> None:
     verifier = "happy go lucky"
     expected = "F9i_m3bYeE8Wrw_rHubiV4coAXzx9eDbRxK_1dVnfX0"
-    result = UserAuthClient._code_challenge(verifier)
+    result = client._code_challenge(verifier)
 
     assert result == expected
 
 
-def test__get_bearer_token() -> None:
-    client = UserAuthClient(MagicMock(), [])
-
+def test__get_bearer_token(client: UserAuthClient) -> None:
     with patch.object(client, "_oauth2_client") as mock_oauth2:
         mock_oauth2.return_value.create_authorization_url.return_value = (
             "https://mock.auth.url",
@@ -55,8 +59,7 @@ def test__get_bearer_token() -> None:
                 )
 
 
-def test__get_bearer_token_exists() -> None:
-    client = UserAuthClient(MagicMock(), [])
+def test__get_bearer_token_exists(client: UserAuthClient) -> None:
     client._bearer = "mock_bearer"
 
     with patch.object(client, "_oauth2_client") as mock_oauth2:
@@ -69,20 +72,19 @@ def test__get_bearer_token_exists() -> None:
             mock_oauth2().fetch_token.assert_not_called()
 
 
-def test__oauth2_client() -> None:
-    mock_auth = ClientAuth("mock_id", "mock_secret", "127.0.0.1")
-    client = UserAuthClient(mock_auth, ["mock_scope"])
+def test__oauth2_client(client: UserAuthClient) -> None:
+    client._keys = ClientAuth("mock_id", "mock_secret", "127.0.0.1")
 
     result = client._oauth2_client()
 
     assert result.client_id == "mock_id"
     assert result.client_secret == "mock_secret"
     assert result.redirect_uri == "127.0.0.1"
-    assert result.scope == ["mock_scope"]
+    assert result.scope == []
 
 
-def test__get_authorization_response() -> None:
+def test__get_authorization_response(client: UserAuthClient) -> None:
     with patch("builtins.input") as mock_input:
         mock_input.return_value = "groovy"
 
-        assert UserAuthClient._get_authorization_response("Some String") == "groovy"
+        assert client._get_authorization_response("Some String") == "groovy"
