@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from twitterapiv2._appauth_client import AppAuthClient
+from twitterapiv2._auth_client import AuthClient
 from twitterapiv2.client_core import ClientCore
-from twitterapiv2.model.application_auth import ApplicationAuth
 from twitterapiv2.model.tweet_count import TweetCount
 
 if TYPE_CHECKING:
@@ -15,9 +14,11 @@ URL_ALL = "https://api.twitter.com/2/tweets/counts/all"
 
 
 class TweetsCounts(ClientCore):
+    scopes = ["tweet.read", "offline.access"]
+
     def __init__(
         self,
-        application_auth: ApplicationAuth,
+        auth_client: AuthClient,
         *,
         end_point: Literal["recent", "all"] = "recent",
     ) -> None:
@@ -26,7 +27,7 @@ class TweetsCounts(ClientCore):
 
         end_point allows use of `/counts/all` endpoint for Academic Research access
         """
-        super().__init__(AppAuthClient(application_auth))
+        super().__init__(auth_client)
         self._url = URL_ALL if end_point == "all" else URL_RECENT
 
         # Define builder methods

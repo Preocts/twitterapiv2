@@ -1,17 +1,16 @@
 from __future__ import annotations
 
-from twitterapiv2._appauth_client import AppAuthClient
+from twitterapiv2._auth_client import AuthClient
 from twitterapiv2.client_core import ClientCore
-from twitterapiv2.model.application_auth import ApplicationAuth
 from twitterapiv2.model.recent import Data
 
 URL = "https://api.twitter.com/2/tweets"
 
 
 class TweetsLookup(ClientCore):
-    def __init__(self, application_auth: ApplicationAuth) -> None:
+    def __init__(self, auth_client: AuthClient) -> None:
         """Lookup information about Tweet(s) specified by requested ID(s)."""
-        super().__init__(AppAuthClient(application_auth))
+        super().__init__(auth_client)
 
         # Define field builder methods
         self.expansions = self.field_builder.expansions
