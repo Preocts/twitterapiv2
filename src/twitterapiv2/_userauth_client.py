@@ -28,14 +28,14 @@ class UserAuthClient(AuthClient):
 
     logger = logging.getLogger(__name__)
 
-    def __init__(self, authentication_keys: ClientAuth, scopes: list[str]) -> None:
+    def __init__(self, auth_model: ClientAuth, scopes: list[str]) -> None:
         """Provide ClientAuth model for authentication."""
-        self._keys = authentication_keys
+        self._keys = auth_model
         self._scopes = scopes
         self._bearer: str | None = None
 
     def get_bearer(self) -> str | None:
-        """Aquire bearer token, or return current."""
+        """Aquire bearer token from Twitter, or return current."""
         if not self._bearer:
             self._get_bearer_token()
         return self._bearer

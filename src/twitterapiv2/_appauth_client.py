@@ -21,13 +21,14 @@ class AppAuthClient(AuthClient):
 
     twitter_api = "https://api.twitter.com"
 
-    def __init__(self, authentication_keys: ApplicationAuth) -> None:
+    def __init__(self, auth_model: ApplicationAuth, scopes: list[str]) -> None:
         """Provide ApplicatoinAuth model for authentication."""
         self.http = httpx.Client()
-        self._keys = authentication_keys
+        self._keys = auth_model
+        self._scopes = scopes.copy()
 
     def get_bearer(self) -> str | None:
-        """Aquire bearer token, or return current. Can be reused until revoked."""
+        """Aquire bearer token from Twitter, or return current."""
         if not self._keys.consumer_bearer:
             self._get_bearer_token()
         return self._keys.consumer_bearer
