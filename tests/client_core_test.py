@@ -8,6 +8,8 @@ from httpx import Response
 from twitterapiv2.client_core import ClientCore
 from twitterapiv2.exceptions import InvalidResponseError
 from twitterapiv2.exceptions import ThrottledError
+from twitterapiv2.model.application_auth import ApplicationAuth
+from twitterapiv2.model.client_auth import ClientAuth
 
 BODY = b'{"data":[{"id":"1461880347478528007","text":"MOCK"}]}'
 HEADERS = {
@@ -38,6 +40,27 @@ MOCK_RESPONSE = Response(200, content=BODY, headers=HEADERS)
 def client() -> ClientCore:
     auth_mock = MagicMock(get_consumer_bearer=MagicMock(return_value="mock_bearer"))
     return ClientCore(auth_mock)
+
+
+def test_factory_client_auth() -> None:
+    model = ClientAuth("mock", "mock", "https://mock")
+
+    result = ClientCore.from_model(model)
+
+    assert result
+
+
+def test_factory_app_auth() -> None:
+    model = ApplicationAuth("mock", "mock", "mock")
+
+    result = ClientCore.from_model(model)
+
+    assert result
+
+
+def test_factory_raises_on_unknown() -> None:
+    with pytest.raises(ValueError):
+        ClientCore.from_model("Something")  # type: ignore
 
 
 def test_default_values(client: ClientCore) -> None:
