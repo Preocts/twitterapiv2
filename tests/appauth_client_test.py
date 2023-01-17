@@ -20,7 +20,7 @@ BAD_RESPONSE = '{"token_type":"bearer"}'
 
 @pytest.fixture
 def client() -> AppAuthClient:
-    return AppAuthClient(ApplicationAuth(MOCK_KEY, MOCK_SECRET))
+    return AppAuthClient(ApplicationAuth(MOCK_KEY, MOCK_SECRET), [])
 
 
 def test_encoded_credentials(client: AppAuthClient) -> None:
