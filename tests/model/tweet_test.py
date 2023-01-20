@@ -49,3 +49,10 @@ def test_poll_invalid_duration() -> None:
         tweet.poll(["Yes", "No"], 0)
     with pytest.raises(ValueError):
         tweet.poll(["Yes", "No"], 10081)
+
+
+def test_direct_message_deep_link() -> None:
+    link = "https://twitter.com/messages/1234567890"
+    tweet = Tweet()
+    tweet.direct_message_deep_link(link)
+    assert tweet.data["direct_message_deep_link"] == link

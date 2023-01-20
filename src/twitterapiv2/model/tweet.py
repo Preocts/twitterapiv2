@@ -19,6 +19,7 @@ class Tweet:
             "text": None,
             "reply_settings": None,
             "poll": None,
+            "direct_message_deep_link": None,
         }
 
     @property
@@ -66,4 +67,9 @@ class Tweet:
             "options": options_trimmed,
             "duration_minutes": duration_minutes,
         }
+        return self
+
+    def direct_message_deep_link(self, direct_message_deep_link: str) -> Tweet:
+        """Set the direct message deep link of the Tweet"""
+        self._data["direct_message_deep_link"] = direct_message_deep_link
         return self
