@@ -8,6 +8,8 @@ URL = "https://api.twitter.com/2/tweets"
 
 
 class TweetsLookup(ClientCore):
+    scopes = ["tweet.read", "offline.access"]
+
     def __init__(self, auth_client: AuthClient) -> None:
         """Lookup information about Tweet(s) specified by requested ID(s)."""
         super().__init__(auth_client)
