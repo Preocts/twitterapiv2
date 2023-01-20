@@ -27,3 +27,25 @@ def test_chain() -> None:
     tweet.text("Hello, world!").reply_settings("everyone")
     assert tweet.data["text"] == "Hello, world!"
     assert tweet.data["reply_settings"] == "everyone"
+
+
+def test_poll() -> None:
+    tweet = Tweet()
+    tweet.poll(["Yes", "No"], 1)
+    assert tweet.data["poll"] == {"options": ["Yes", "No"], "duration_minutes": 1}
+
+
+def test_poll_invalid_options() -> None:
+    tweet = Tweet()
+    with pytest.raises(ValueError):
+        tweet.poll(["Yes"], 1)
+    with pytest.raises(ValueError):
+        tweet.poll(["Yes", "No", "Maybe", "I don't know", "Yes"], 1)
+
+
+def test_poll_invalid_duration() -> None:
+    tweet = Tweet()
+    with pytest.raises(ValueError):
+        tweet.poll(["Yes", "No"], 0)
+    with pytest.raises(ValueError):
+        tweet.poll(["Yes", "No"], 10081)
