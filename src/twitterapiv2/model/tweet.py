@@ -8,6 +8,11 @@ from __future__ import annotations
 from typing import Any
 
 VALID_REPLY_SETTINGS = ["everyone", "mentioned_users", "none"]
+MIN_POLL_DURATION = 1
+MAX_POLL_DURATION = 10080
+MIN_POLL_OPTIONS = 2
+MAX_POLL_OPTIONS = 4
+MAX_POLL_OPTION_LENGTH = 25
 
 
 class Tweet:
@@ -54,15 +59,15 @@ class Tweet:
             options: List of options for the poll (max 4) (max 25 characters per option)
             duration_minutes: Duration of the poll in minutes (max 10080 minutes)
         """
-        if len(options) > 4:
+        if len(options) > MAX_POLL_OPTIONS:
             raise ValueError(f"Too many options: {len(options)}")
-        if len(options) < 2:
+        if len(options) < MIN_POLL_OPTIONS:
             raise ValueError(f"Too few options: {len(options)}")
-        if duration_minutes > 10080:
+        if duration_minutes > MAX_POLL_DURATION:
             raise ValueError(f"Duration too long: {duration_minutes}")
-        if duration_minutes < 1:
+        if duration_minutes < MIN_POLL_DURATION:
             raise ValueError(f"Duration too short: {duration_minutes}")
-        options_trimmed = [option[:25] for option in options]
+        options_trimmed = [option[:MAX_POLL_OPTION_LENGTH] for option in options]
         self._data["poll"] = {
             "options": options_trimmed,
             "duration_minutes": duration_minutes,
