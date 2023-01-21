@@ -39,8 +39,8 @@ class Tweet:
 
     @property
     def data(self) -> dict[str, Any]:
-        """Return the data of the Tweet"""
-        return self._data
+        """Return the data of the Tweet, excluding None values."""
+        return {k: v for k, v in self._data.items() if v is not None}
 
     def text(self, text: str) -> Tweet:
         """Set the text of the Tweet"""
