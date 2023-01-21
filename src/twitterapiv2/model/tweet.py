@@ -13,13 +13,23 @@ MAX_POLL_DURATION = 10080
 MIN_POLL_OPTIONS = 2
 MAX_POLL_OPTIONS = 4
 MAX_POLL_OPTION_LENGTH = 25
+MAX_TWEET_LENGTH = 280
 
 
 class Tweet:
     """Data model for a Tweet"""
 
-    def __init__(self) -> None:
-        """Create an empty Tweet object"""
+    def __init__(self, *, auto_truncate: bool = False) -> None:
+        """
+        Create an empty Tweet object.
+
+        Keyword Args:
+            auto_truncate: Automatically truncate text to fit within limits
+
+        Raises:
+            ValueError: If auto_truncate is False and text is too long
+        """
+        self._auto_truncate = auto_truncate
         self._data: dict[str, Any] = {
             "text": None,
             "reply_settings": None,
@@ -34,7 +44,9 @@ class Tweet:
 
     def text(self, text: str) -> Tweet:
         """Set the text of the Tweet"""
-        self._data["text"] = text
+        if not self._auto_truncate and len(text) > MAX_TWEET_LENGTH:
+            raise ValueError(f"Tweet text too long: {len(text)}")
+        self._data["text"] = text[:MAX_TWEET_LENGTH]
         return self
 
     def reply_settings(self, reply_settings: str) -> Tweet:
@@ -59,14 +71,15 @@ class Tweet:
             options: List of options for the poll (max 4) (max 25 characters per option)
             duration_minutes: Duration of the poll in minutes (max 10080 minutes)
         """
-        if len(options) > MAX_POLL_OPTIONS:
-            raise ValueError(f"Too many options: {len(options)}")
-        if len(options) < MIN_POLL_OPTIONS:
-            raise ValueError(f"Too few options: {len(options)}")
-        if duration_minutes > MAX_POLL_DURATION:
-            raise ValueError(f"Duration too long: {duration_minutes}")
-        if duration_minutes < MIN_POLL_DURATION:
-            raise ValueError(f"Duration too short: {duration_minutes}")
+        if len(options) > MAX_POLL_OPTIONS or len(options) < MIN_POLL_OPTIONS:
+            raise ValueError(f"Invalid number of options: {len(options)}")
+        if duration_minutes > MAX_POLL_DURATION or duration_minutes < MIN_POLL_DURATION:
+            raise ValueError(f"Invalid duration: {duration_minutes}")
+        if not self._auto_truncate:
+            for option in options:
+                if len(option) > MAX_POLL_OPTION_LENGTH:
+                    raise ValueError(f"Poll option '{option}' too long: {len(option)}")
+
         options_trimmed = [option[:MAX_POLL_OPTION_LENGTH] for option in options]
         self._data["poll"] = {
             "options": options_trimmed,
