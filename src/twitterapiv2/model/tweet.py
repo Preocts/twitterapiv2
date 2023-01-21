@@ -35,6 +35,11 @@ class Tweet:
             "reply_settings": None,
             "poll": None,
             "direct_message_deep_link": None,
+            "for_super_followers_only": None,
+            "geo": None,
+            "media": None,
+            "quoted_tweet_id": None,
+            "reply": None,
         }
 
     @property
@@ -90,4 +95,41 @@ class Tweet:
     def direct_message_deep_link(self, direct_message_deep_link: str) -> Tweet:
         """Set the direct message deep link of the Tweet"""
         self._data["direct_message_deep_link"] = direct_message_deep_link
+        return self
+
+    def for_super_followers_only(self) -> Tweet:
+        """Set the for super followers only setting of the Tweet"""
+        self._data["for_super_followers_only"] = True
+        return self
+
+    def geo(self, place_id: str) -> Tweet:
+        """Set the geo location of the Tweet."""
+        self._data["geo"] = {"place_id": place_id}
+        return self
+
+    def media(
+        self,
+        media_ids: list[str],
+        tagged_user_ids: list[str] | None = None,
+    ) -> Tweet:
+        """Set the media of the Tweet."""
+        self._data["media"] = {"media_ids": media_ids}
+        if tagged_user_ids:
+            self._data["media"]["tagged_user_ids"] = tagged_user_ids
+        return self
+
+    def quoted_tweet_id(self, quoted_tweet_id: str) -> Tweet:
+        """Set the quoted tweet id of the Tweet."""
+        self._data["quoted_tweet_id"] = quoted_tweet_id
+        return self
+
+    def reply(
+        self,
+        in_reply_to_tweet_id: str,
+        exclude_reply_user_ids: list[str] | None = None,
+    ) -> Tweet:
+        """Set the reply of the Tweet."""
+        self._data["reply"] = {"in_reply_to_tweet_id": in_reply_to_tweet_id}
+        if exclude_reply_user_ids:
+            self._data["reply"]["exclude_reply_user_ids"] = exclude_reply_user_ids
         return self
