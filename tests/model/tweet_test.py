@@ -35,12 +35,31 @@ def test_reply_settings_invalid() -> None:
 
 
 def test_chain() -> None:
-    tweet = Tweet()
+    newtweet = (
+        Tweet()
+        .text("Hello, world!")
+        .reply_settings("everyone")
+        .poll(["Yes", "No"], 1)
+        .direct_message_deep_link("https://twitter.com/messages/1234567890")
+        .for_super_followers_only()
+        .geo("5a110d312052166f")
+        .media(["1_2", "3_4"])
+        .quoted_tweet_id("1234567890")
+        .reply("1234567890")
+    )
 
-    tweet.text("Hello, world!").reply_settings("everyone")
-
-    assert tweet.data["text"] == "Hello, world!"
-    assert tweet.data["reply_settings"] == "everyone"
+    assert newtweet.data["text"] == "Hello, world!"
+    assert newtweet.data["reply_settings"] == "everyone"
+    assert newtweet.data["poll"] == {"options": ["Yes", "No"], "duration_minutes": 1}
+    assert (
+        newtweet.data["direct_message_deep_link"]
+        == "https://twitter.com/messages/1234567890"
+    )
+    assert newtweet.data["for_super_followers_only"] is True
+    assert newtweet.data["geo"] == {"place_id": "5a110d312052166f"}
+    assert newtweet.data["media"] == {"media_ids": ["1_2", "3_4"]}
+    assert newtweet.data["quoted_tweet_id"] == "1234567890"
+    assert newtweet.data["reply"] == {"in_reply_to_tweet_id": "1234567890"}
 
 
 def test_poll_invalid_option_length() -> None:
