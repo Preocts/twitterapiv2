@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from unittest.mock import MagicMock
+from unittest.mock import patch
 
 import pytest
 from httpx import Response
@@ -122,3 +123,51 @@ def test_response_handling_invalid(client: ClientCore) -> None:
 def test_response_handing_200(client: ClientCore) -> None:
     mock_resp = Response(200, headers=HEADERS)
     client.raise_on_response("https://", mock_resp)
+
+
+def test_get(client: ClientCore) -> None:
+    client._last_response = MOCK_RESPONSE
+    client.field_builder._fields = {"fields": "mock"}
+
+    with patch.object(client.http, "get", return_value=MOCK_RESPONSE) as mock_get:
+        result = client.get("https://mock")
+
+        assert result
+        assert client._next_token is None
+        assert client._last_response == MOCK_RESPONSE
+        mock_get.assert_called_once_with(
+            url="https://mock",
+            params={"fields": "mock"},
+            headers=client.headers,
+        )
+
+
+def test_post(client: ClientCore) -> None:
+    client._last_response = MOCK_RESPONSE
+
+    with patch.object(client.http, "post", return_value=MOCK_RESPONSE) as mock_post:
+        result = client.post("https://mock", json={"payload": "mock"})
+
+        assert result
+        assert client._next_token is None
+        assert client._last_response == MOCK_RESPONSE
+        mock_post.assert_called_once_with(
+            url="https://mock",
+            headers=client.headers,
+            json={"payload": "mock"},
+        )
+
+
+def test_delete(client: ClientCore) -> None:
+    client._last_response = MOCK_RESPONSE
+
+    with patch.object(client.http, "delete", return_value=MOCK_RESPONSE) as mock_delete:
+        result = client.delete("https://mock")
+
+        assert result
+        assert client._next_token is None
+        assert client._last_response == MOCK_RESPONSE
+        mock_delete.assert_called_once_with(
+            url="https://mock",
+            headers=client.headers,
+        )
