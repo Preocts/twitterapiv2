@@ -89,6 +89,35 @@ class ClientCore:
         self._next_token = meta.get("next_token") if meta else None
         return json_body
 
+    def post(self, url: str, json: dict[str, Any]) -> Any:
+        """
+        Send POST request to url with defined fields encoded into URL.
+
+        Args:
+            url: Target Twitter API URL
+            json: JSON body to send
+
+        Returns:
+            JSON response as Any
+        """
+        self._last_response = self.http.post(url=url, headers=self.headers, json=json)
+        self.raise_on_response(url, self._last_response)
+        return self._last_response.json()
+
+    def delete(self, url: str) -> Any:
+        """
+        Send DELETE request to url with defined fields encoded into URL.
+
+        Args:
+            url: Target Twitter API URL
+
+        Returns:
+            JSON response as Any
+        """
+        self._last_response = self.http.delete(url=url, headers=self.headers)
+        self.raise_on_response(url, self._last_response)
+        return self._last_response.json()
+
     def fetch(self) -> Any:
         """Override with specific implementation"""
         raise NotImplementedError
