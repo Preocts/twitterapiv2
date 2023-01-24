@@ -13,6 +13,7 @@ from twitterapiv2.exceptions import ThrottledError
 from twitterapiv2.fields import Fields
 from twitterapiv2.model.application_auth import ApplicationAuth
 from twitterapiv2.model.client_auth import ClientAuth
+from twitterapiv2.model.me import Me
 
 
 class ClientCore:
@@ -67,6 +68,11 @@ class ClientCore:
     def headers(self) -> dict[str, str]:
         """Build headers with TW_BEARER_TOKEN from environ."""
         return {"Authorization": f"Bearer {self.auth_client.get_bearer()}"}
+
+    def me(self) -> Me:
+        """Return the authenticated user's profile."""
+        result = self.get("https://api.twitter.com/2/users/me")
+        return Me(**result.json()["data"])
 
     def get(self, url: str) -> Any:
         """

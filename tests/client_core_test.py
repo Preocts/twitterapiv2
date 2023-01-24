@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from datetime import datetime
 from unittest.mock import MagicMock
 from unittest.mock import patch
@@ -166,3 +167,21 @@ def test_delete(client: ClientCore) -> None:
             url="https://mock",
             headers=client.headers,
         )
+
+
+def test_me(client: ClientCore) -> None:
+    mock_resp_body = {
+        "data": {
+            "id": "mock_id",
+            "name": "mock_name",
+            "username": "mock_username",
+        },
+    }
+    mock_resp = Response(200, content=json.dumps(mock_resp_body), headers=HEADERS)
+
+    with patch.object(client, "get", return_value=mock_resp):
+        result = client.me()
+
+        assert result.id == "mock_id"
+        assert result.name == "mock_name"
+        assert result.username == "mock_username"
