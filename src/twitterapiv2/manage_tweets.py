@@ -1,3 +1,8 @@
+"""
+Create or delete a Tweet on behalf of an authenticated user.
+
+https://developer.twitter.com/en/docs/twitter-api/tweets/manage-tweets/introduction
+"""
 from __future__ import annotations
 
 from typing import Any
@@ -10,6 +15,8 @@ URL_BASE = "https://api.twitter.com/2/tweets"
 
 
 class ManageTweets(ClientCore):
+    """Create or delete a Tweet on behalf of an authenticated user."""
+
     scopes = ["tweet.read", "tweet.write", "users.read", "offline.access"]
 
     def __init__(self, auth_client: AuthClient) -> None:
