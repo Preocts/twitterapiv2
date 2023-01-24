@@ -118,10 +118,6 @@ class ClientCore:
         self.raise_on_response(url, self._last_response)
         return self._last_response.json()
 
-    def fetch(self) -> Any:
-        """Override with specific implementation"""
-        raise NotImplementedError
-
     def raise_on_response(self, url: str, resp: httpx.Response) -> None:
         """
         Custom handling for Twitter status codes.

@@ -97,11 +97,6 @@ def test_fields(client: ClientCore) -> None:
     assert "Invalid" not in client.fields
 
 
-def test_fetch_not_implemented(client: ClientCore) -> None:
-    with pytest.raises(NotImplementedError):
-        client.fetch()
-
-
 def test_response_handling_429(client: ClientCore) -> None:
     mock_resp = Response(429, headers=HEADERS)
     with pytest.raises(ThrottledError):
