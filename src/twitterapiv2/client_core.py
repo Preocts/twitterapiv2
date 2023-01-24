@@ -13,6 +13,7 @@ from twitterapiv2.exceptions import ThrottledError
 from twitterapiv2.fields import Fields
 from twitterapiv2.model.application_auth import ApplicationAuth
 from twitterapiv2.model.client_auth import ClientAuth
+from twitterapiv2.model.me import Me
 
 
 class ClientCore:
@@ -68,6 +69,11 @@ class ClientCore:
         """Build headers with TW_BEARER_TOKEN from environ."""
         return {"Authorization": f"Bearer {self.auth_client.get_bearer()}"}
 
+    def me(self) -> Me:
+        """Return the authenticated user's profile."""
+        result = self.get("https://api.twitter.com/2/users/me")
+        return Me(**result.json()["data"])
+
     def get(self, url: str) -> Any:
         """
         Send GET request to url with defined fields encoded into URL.
@@ -117,10 +123,6 @@ class ClientCore:
         self._last_response = self.http.delete(url=url, headers=self.headers)
         self.raise_on_response(url, self._last_response)
         return self._last_response.json()
-
-    def fetch(self) -> Any:
-        """Override with specific implementation"""
-        raise NotImplementedError
 
     def raise_on_response(self, url: str, resp: httpx.Response) -> None:
         """

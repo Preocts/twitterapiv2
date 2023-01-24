@@ -9,8 +9,8 @@ class ClientAuth:
     """Authentication keys for client OAuth2 authorization."""
 
     client_id: str
-    client_secret: str | None
-    redirect_uri: str | None
+    client_secret: str | None = None
+    redirect_uri: str = "https://127.0.0.1"
 
     @classmethod
     def from_environ(cls) -> ClientAuth:
