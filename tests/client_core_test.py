@@ -158,7 +158,7 @@ def test_delete(client: ClientCore) -> None:
     client._last_response = MOCK_RESPONSE
 
     with patch.object(client.http, "delete", return_value=MOCK_RESPONSE) as mock_delete:
-        result = client.delete("https://mock")
+        result = client.unlike("https://mock")
 
         assert result
         assert client._next_token is None
@@ -180,7 +180,7 @@ def test_me(client: ClientCore) -> None:
     mock_resp = Response(200, content=json.dumps(mock_resp_body), headers=HEADERS)
 
     with patch.object(client, "get", return_value=mock_resp):
-        result = client.me()
+        result = client.get_user()
 
         assert result.id == "mock_id"
         assert result.name == "mock_name"
