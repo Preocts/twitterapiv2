@@ -17,7 +17,7 @@ URL_BASE = "https://api.twitter.com/2/tweets"
 class ManageTweets(ClientCore):
     """Create or delete a Tweet on behalf of an authenticated user."""
 
-    scopes = ["tweet.read", "tweet.write", "users.read", "offline.access"]
+    scopes = ["tweet.read", "tweet.write", "users.read"]
 
     def __init__(self, auth_client: AuthClient) -> None:
         """Create a ManageTweets client for sending and deleting Tweets."""

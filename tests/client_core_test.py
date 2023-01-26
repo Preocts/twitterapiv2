@@ -169,7 +169,7 @@ def test_delete(client: ClientCore) -> None:
         )
 
 
-def test_me(client: ClientCore) -> None:
+def test_get_user(client: ClientCore) -> None:
     mock_resp_body = {
         "data": {
             "id": "mock_id",
@@ -180,7 +180,7 @@ def test_me(client: ClientCore) -> None:
     mock_resp = Response(200, content=json.dumps(mock_resp_body), headers=HEADERS)
 
     with patch.object(client, "get", return_value=mock_resp):
-        result = client.me()
+        result = client.get_user()
 
         assert result.id == "mock_id"
         assert result.name == "mock_name"

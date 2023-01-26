@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class Me:
+class UserRef:
     """Simple model holding user id, username, and name."""
 
     id: str  # noqa: A003
