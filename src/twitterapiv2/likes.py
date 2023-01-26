@@ -34,7 +34,7 @@ class Likes(ClientCore):
     def unlike(self, tweet_id: str) -> bool:
         """Unlike a tweet."""
         url = f"{self._url}/{self.user_id}/likes/{tweet_id}"
-        return self.unlike(url)
+        return self.delete(url)
 
     def like(self, tweet_id: str) -> bool:
         """Like a tweet."""
