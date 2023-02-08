@@ -25,7 +25,6 @@ TWITTER_TOKEN = "https://api.twitter.com/2/oauth2/token"
 
 
 class UserAuthClient(AuthClient):
-
     logger = logging.getLogger(__name__)
 
     def __init__(self, auth_model: ClientAuth, scopes: list[str]) -> None:

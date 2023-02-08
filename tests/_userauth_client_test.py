@@ -64,7 +64,6 @@ def test__get_bearer_token_exists(client: UserAuthClient) -> None:
 
     with patch.object(client, "_oauth2_client") as mock_oauth2:
         with patch.object(client, "_get_authorization_response"):
-
             result = client.get_bearer()
 
             assert result == "mock_bearer"

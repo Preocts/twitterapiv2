@@ -16,7 +16,6 @@ from twitterapiv2.model.application_auth import ApplicationAuth
 
 
 class AppAuthClient(AuthClient):
-
     logger = logging.getLogger(__name__)
 
     twitter_api = "https://api.twitter.com"
